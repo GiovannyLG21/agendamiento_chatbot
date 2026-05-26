@@ -1,0 +1,409 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-16T19:58:38.000Z",
+    "createdAt": "2026-03-16T19:58:26.885Z",
+    "versionId": "c4a5c5a7-1802-4111-98ca-1896829233a9",
+    "workflowId": "cvRmJ51Gl15YlJev",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "703f545d-3515-4fc6-8dc9-128f00610bf5",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "1b4c0c1b-cbd8-454a-879e-19e88e7b439c",
+        "name": "Webhook",
+        "webhookId": "703f545d-3515-4fc6-8dc9-128f00610bf5"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"code\": \"null\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          624,
+          96
+        ],
+        "id": "2c9f8a9a-3dc5-4704-bbbb-296d6faca80a",
+        "name": "Cita No Encontrada"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          832,
+          -96
+        ],
+        "id": "c0cace75-1aa0-400e-a5b9-74d43a72a45a",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT Agenda.id as 'code', Agenda.id_med, Agenda.medico, Consultas.consulta AS 'especialidad', Agenda.paciente, Agenda.fecha_consulta as 'fecha', Agenda.hora_consulta AS 'hora'\nFROM  u125634063_ins_andes.Agenda\nJOIN Medicos ON Agenda.id_med = Medicos.id\nJOIN Consultas ON Medicos.especialidad = Consultas.id\nWHERE doc_paciente = $1 \nAND estado = 2\nAND (\n      fecha_consulta > CURDATE()\n      OR (\n          fecha_consulta = CURDATE()\n          AND Hora_consulta > CURTIME()\n      )\n)\nORDER BY fecha_consulta DESC\nLIMIT 1;",
+          "options": {
+            "queryReplacement": "={{ $json.body.doc }}"
+          }
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          208,
+          0
+        ],
+        "id": "79ca9d68-4e75-4526-970e-b7010760de68",
+        "name": "Consultar Cita",
+        "alwaysOutputData": true,
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "709fc6a6-f3da-4d5a-b905-bee9c6ea42a7",
+                "leftValue": "={{ $json.code }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          416,
+          0
+        ],
+        "id": "29ac90b2-84e3-4be7-8969-b460c8c6fe1d",
+        "name": "Cita Activa"
+      },
+      {
+        "parameters": {
+          "jsCode": "const citaData = $input.first().json\n\nconst fechaCita = new Date(citaData.fecha)\nconst [h, m] = citaData.hora.split(':')\nfechaCita.setHours(parseInt(h), parseInt(m))\n\nconst formatoFecha = fechaCita.toLocaleDateString('es-CO', {\n  year: 'numeric',\n  month: 'long',\n  day: '2-digit'\n})\n\nconst formatoHora = fechaCita.toLocaleTimeString('es-CO', {\n  hour: '2-digit',\n  minute: '2-digit',\n  hour12: true\n})\n\nreturn { \n  ...citaData, \n  fecha: formatoFecha, \n  hora: formatoHora\n}\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          624,
+          -96
+        ],
+        "id": "91d0ea6b-b097-4c17-b955-6d0d8b26673c",
+        "name": "Formato Datos"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Consultar Cita",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consultar Cita": {
+        "main": [
+          [
+            {
+              "node": "Cita Activa",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cita Activa": {
+        "main": [
+          [
+            {
+              "node": "Formato Datos",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Cita No Encontrada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formato Datos": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version c4a5c5a7",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "c4a5c5a7-1802-4111-98ca-1896829233a9",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Consultar Cita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Cita": {
+      "main": [
+        [
+          {
+            "node": "Cita Activa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cita Activa": {
+      "main": [
+        [
+          {
+            "node": "Formato Datos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cita No Encontrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formato Datos": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T09:00:02.942Z",
+  "id": "cvRmJ51Gl15YlJev",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Consultar Cita",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "703f545d-3515-4fc6-8dc9-128f00610bf5",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1b4c0c1b-cbd8-454a-879e-19e88e7b439c",
+      "name": "Webhook",
+      "webhookId": "703f545d-3515-4fc6-8dc9-128f00610bf5"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"code\": \"null\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        624,
+        96
+      ],
+      "id": "2c9f8a9a-3dc5-4704-bbbb-296d6faca80a",
+      "name": "Cita No Encontrada"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        832,
+        -96
+      ],
+      "id": "c0cace75-1aa0-400e-a5b9-74d43a72a45a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT Agenda.id as 'code', Agenda.id_med, Agenda.medico, Consultas.consulta AS 'especialidad', Agenda.paciente, Agenda.fecha_consulta as 'fecha', Agenda.hora_consulta AS 'hora'\nFROM  u125634063_ins_andes.Agenda\nJOIN Medicos ON Agenda.id_med = Medicos.id\nJOIN Consultas ON Medicos.especialidad = Consultas.id\nWHERE doc_paciente = $1 \nAND estado = 2\nAND (\n      fecha_consulta > CURDATE()\n      OR (\n          fecha_consulta = CURDATE()\n          AND Hora_consulta > CURTIME()\n      )\n)\nORDER BY fecha_consulta DESC\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ $json.body.doc }}"
+        }
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        208,
+        0
+      ],
+      "id": "79ca9d68-4e75-4526-970e-b7010760de68",
+      "name": "Consultar Cita",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "709fc6a6-f3da-4d5a-b905-bee9c6ea42a7",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "29ac90b2-84e3-4be7-8969-b460c8c6fe1d",
+      "name": "Cita Activa"
+    },
+    {
+      "parameters": {
+        "jsCode": "const citaData = $input.first().json\n\nconst fechaCita = new Date(citaData.fecha)\nconst [h, m] = citaData.hora.split(':')\nfechaCita.setHours(parseInt(h), parseInt(m))\n\nconst formatoFecha = fechaCita.toLocaleDateString('es-CO', {\n  year: 'numeric',\n  month: 'long',\n  day: '2-digit'\n})\n\nconst formatoHora = fechaCita.toLocaleTimeString('es-CO', {\n  hour: '2-digit',\n  minute: '2-digit',\n  hour12: true\n})\n\nreturn { \n  ...citaData, \n  fecha: formatoFecha, \n  hora: formatoHora\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "91d0ea6b-b097-4c17-b955-6d0d8b26673c",
+      "name": "Formato Datos"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T09:00:02.945Z",
+      "createdAt": "2026-03-15T09:00:02.945Z",
+      "role": "workflow:owner",
+      "workflowId": "cvRmJ51Gl15YlJev",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-16T19:58:26.884Z",
+  "versionId": "c4a5c5a7-1802-4111-98ca-1896829233a9"
+}
