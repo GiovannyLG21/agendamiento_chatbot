@@ -1,0 +1,765 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-15T07:50:51.000Z",
+    "createdAt": "2026-03-15T07:48:41.257Z",
+    "versionId": "b369ce10-21e5-4f1e-8ee1-9a4b40f6e192",
+    "workflowId": "NZncd0tzy9UmBKVm",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "281a3bda-a1c1-4923-be7a-905f1dba2c9f",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -112,
+          64
+        ],
+        "id": "d8f3b3e7-ad87-465f-a676-6278fc3351b9",
+        "name": "Webhook",
+        "webhookId": "281a3bda-a1c1-4923-be7a-905f1dba2c9f"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "fbfa1979-210c-48a6-803e-f270704f3f32",
+                "name": "doc",
+                "value": "={{ $json.body.doc }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          112,
+          64
+        ],
+        "id": "472ec446-d8ef-4ab1-aa5a-199794e31031",
+        "name": "Set Doc"
+      },
+      {
+        "parameters": {
+          "jsCode": "const query = $(\"Query Paciente\").first().json;\nconst paciente = query.paciente;\nconst fechaNacimiento = query.fecha_nacimiento;\nconst sexo = query.sexo;\nconst eps = query.eps;\nconst correo = query.correo;\nconst telefono = query.telefono;\nconst origen_chatbot = Boolean(query.origen_chatbot);\nconst valid_doc = Boolean($(\"Validar Doc\").first().json.validDoc);\nconst datos_form = Boolean($input.first().json.row_number);\n\nfunction calcularEdad(fecha) {\n  const fechaActual = new Date();\n  const fechaNacimiento = new Date(fecha);\n\n  let años = fechaActual.getFullYear() - fechaNacimiento.getFullYear();\n  const mes = fechaActual.getMonth() - fechaNacimiento.getMonth();\n\n  if (\n    mes < 0 ||\n    (mes === 0 && fechaActual.getDate() < fechaNacimiento.getDate())\n  )\n    años--;\n\n  return años;\n}\n\nconst edad = calcularEdad(fechaNacimiento);\n\nreturn {\n  paciente: paciente.trim(),\n  edad,\n  sexo,\n  eps,\n  telefono: telefono ? telefono : \"null\",\n  correo: correo ? correo : \"null\",\n  valid_doc,\n  datos_requeridos: origen_chatbot && !datos_form,\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1456,
+          -128
+        ],
+        "id": "913aa53b-e686-4a98-96c7-9fcb1660984d",
+        "name": "Paciente Data"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT CONCAT_WS(' ', `nombre1`, `nombre2`, `apellido1`, `apellido2`) as 'paciente', \n`sexo`,\n`fecha_nacimiento`,\n`eps`,\n`telefono`,\n`correo`,\n`origen_chatbot`\nFROM u125634063_ins_andes.Pacientes\nWHERE `num_documento` = $1",
+          "options": {
+            "queryReplacement": "={{ $('Set Doc').item.json.doc }}"
+          }
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          784,
+          -32
+        ],
+        "id": "1bde6737-4539-4f3b-9786-8e4caa8d8d7b",
+        "name": "Query Paciente",
+        "alwaysOutputData": true,
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "dbe78087-e67f-4aa8-a63c-f2ee9c5967d6",
+                "leftValue": "={{ $json.paciente }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1008,
+          -32
+        ],
+        "id": "13b56bdb-5e3f-490b-8f54-0e200e2e49d1",
+        "name": "Paciente Encontrado"
+      },
+      {
+        "parameters": {
+          "jsCode": "const doc = $input.first().json.doc;\nconst validDoc = !isNaN(doc) && doc.length >= 8 && doc.length <= 10;\nreturn { validDoc };\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          336,
+          64
+        ],
+        "id": "d8bc5806-3685-47bd-9a93-7b84e17c622e",
+        "name": "Validar Doc"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "087a34f9-e9f2-4b90-9823-e9e24c519b1b",
+                "leftValue": "={{ $json.validDoc }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          560,
+          64
+        ],
+        "id": "65dfe121-8073-49d9-bd7c-60b0fc83e6f5",
+        "name": "Doc Valido"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"valid_doc\": {{ $('Validar Doc').item.json.validDoc }}\n} ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          784,
+          160
+        ],
+        "id": "cbb2cde2-0f1a-4aae-b223-14439f9f2d5e",
+        "name": "Doc Invalido"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"paciente\": \"null\",\n  \"valid_doc\": {{ $('Validar Doc').item.json.validDoc }}\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1232,
+          64
+        ],
+        "id": "87b1cc72-79e7-4007-8a69-86a5e41ebb7e",
+        "name": "Paciente No Encontrado"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n\"paciente\": \"{{$json.paciente}}\",\n\"edad\": {{$json.edad}},\n\"sexo\": \"{{$json.sexo}}\",\n\"eps\": \"{{$json.eps}}\",\n\"telefono\": \"{{$json.telefono}}\",\n\"correo\": \"{{$json.correo}}\",\n\"valid_doc\": {{$json.valid_doc}},\n\"datos_requeridos\": \"{{$json.datos_requeridos}}\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1680,
+          -128
+        ],
+        "id": "4bad92e3-931d-4280-b936-d091a20d3cae",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI",
+            "mode": "list",
+            "cachedResultName": "DATOS PACIENTES - CHATBOT - ANDES DEL SUR IPS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 96979820,
+            "mode": "list",
+            "cachedResultName": "Pacientes Chatbot",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI/edit#gid=96979820"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Documento de identidad",
+                "lookupValue": "={{ $('Set Doc').item.json.doc }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1232,
+          -128
+        ],
+        "id": "89be2a93-6a45-4723-a7c8-819508753128",
+        "name": "Verificar Paciente Nuevo",
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Gqknaz3wzGkB42B5",
+            "name": "Google Sheets account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Set Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Doc": {
+        "main": [
+          [
+            {
+              "node": "Validar Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Query Paciente": {
+        "main": [
+          [
+            {
+              "node": "Paciente Encontrado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paciente Encontrado": {
+        "main": [
+          [
+            {
+              "node": "Verificar Paciente Nuevo",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Paciente No Encontrado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar Doc": {
+        "main": [
+          [
+            {
+              "node": "Doc Valido",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Doc Valido": {
+        "main": [
+          [
+            {
+              "node": "Query Paciente",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Doc Invalido",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paciente Data": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verificar Paciente Nuevo": {
+        "main": [
+          [
+            {
+              "node": "Paciente Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft Sas",
+    "name": "Version b369ce10",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "b369ce10-21e5-4f1e-8ee1-9a4b40f6e192",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Doc": {
+      "main": [
+        [
+          {
+            "node": "Validar Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Paciente": {
+      "main": [
+        [
+          {
+            "node": "Paciente Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paciente Encontrado": {
+      "main": [
+        [
+          {
+            "node": "Verificar Paciente Nuevo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Paciente No Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Doc": {
+      "main": [
+        [
+          {
+            "node": "Doc Valido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Doc Valido": {
+      "main": [
+        [
+          {
+            "node": "Query Paciente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Doc Invalido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paciente Data": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Paciente Nuevo": {
+      "main": [
+        [
+          {
+            "node": "Paciente Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-14T09:02:53.346Z",
+  "id": "NZncd0tzy9UmBKVm",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Consultar Paciente",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "281a3bda-a1c1-4923-be7a-905f1dba2c9f",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -112,
+        64
+      ],
+      "id": "d8f3b3e7-ad87-465f-a676-6278fc3351b9",
+      "name": "Webhook",
+      "webhookId": "281a3bda-a1c1-4923-be7a-905f1dba2c9f"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fbfa1979-210c-48a6-803e-f270704f3f32",
+              "name": "doc",
+              "value": "={{ $json.body.doc }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        64
+      ],
+      "id": "472ec446-d8ef-4ab1-aa5a-199794e31031",
+      "name": "Set Doc"
+    },
+    {
+      "parameters": {
+        "jsCode": "const query = $(\"Query Paciente\").first().json;\nconst paciente = query.paciente;\nconst fechaNacimiento = query.fecha_nacimiento;\nconst sexo = query.sexo;\nconst eps = query.eps;\nconst correo = query.correo;\nconst telefono = query.telefono;\nconst origen_chatbot = Boolean(query.origen_chatbot);\nconst valid_doc = Boolean($(\"Validar Doc\").first().json.validDoc);\nconst datos_form = Boolean($input.first().json.row_number);\n\nfunction calcularEdad(fecha) {\n  const fechaActual = new Date();\n  const fechaNacimiento = new Date(fecha);\n\n  let años = fechaActual.getFullYear() - fechaNacimiento.getFullYear();\n  const mes = fechaActual.getMonth() - fechaNacimiento.getMonth();\n\n  if (\n    mes < 0 ||\n    (mes === 0 && fechaActual.getDate() < fechaNacimiento.getDate())\n  )\n    años--;\n\n  return años;\n}\n\nconst edad = calcularEdad(fechaNacimiento);\n\nreturn {\n  paciente: paciente.trim(),\n  edad,\n  sexo,\n  eps,\n  telefono: telefono ? telefono : \"null\",\n  correo: correo ? correo : \"null\",\n  valid_doc,\n  datos_requeridos: origen_chatbot && !datos_form,\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1456,
+        -128
+      ],
+      "id": "913aa53b-e686-4a98-96c7-9fcb1660984d",
+      "name": "Paciente Data"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT CONCAT_WS(' ', `nombre1`, `nombre2`, `apellido1`, `apellido2`) as 'paciente', \n`sexo`,\n`fecha_nacimiento`,\n`eps`,\n`telefono`,\n`correo`,\n`origen_chatbot`\nFROM u125634063_ins_andes.Pacientes\nWHERE `num_documento` = $1",
+        "options": {
+          "queryReplacement": "={{ $('Set Doc').item.json.doc }}"
+        }
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        784,
+        -32
+      ],
+      "id": "1bde6737-4539-4f3b-9786-8e4caa8d8d7b",
+      "name": "Query Paciente",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "dbe78087-e67f-4aa8-a63c-f2ee9c5967d6",
+              "leftValue": "={{ $json.paciente }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1008,
+        -32
+      ],
+      "id": "13b56bdb-5e3f-490b-8f54-0e200e2e49d1",
+      "name": "Paciente Encontrado"
+    },
+    {
+      "parameters": {
+        "jsCode": "const doc = $input.first().json.doc;\nconst validDoc = !isNaN(doc) && doc.length >= 8 && doc.length <= 10;\nreturn { validDoc };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        64
+      ],
+      "id": "d8bc5806-3685-47bd-9a93-7b84e17c622e",
+      "name": "Validar Doc"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "087a34f9-e9f2-4b90-9823-e9e24c519b1b",
+              "leftValue": "={{ $json.validDoc }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        560,
+        64
+      ],
+      "id": "65dfe121-8073-49d9-bd7c-60b0fc83e6f5",
+      "name": "Doc Valido"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"valid_doc\": {{ $('Validar Doc').item.json.validDoc }}\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        784,
+        160
+      ],
+      "id": "cbb2cde2-0f1a-4aae-b223-14439f9f2d5e",
+      "name": "Doc Invalido"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"paciente\": \"null\",\n  \"valid_doc\": {{ $('Validar Doc').item.json.validDoc }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1232,
+        64
+      ],
+      "id": "87b1cc72-79e7-4007-8a69-86a5e41ebb7e",
+      "name": "Paciente No Encontrado"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n\"paciente\": \"{{$json.paciente}}\",\n\"edad\": {{$json.edad}},\n\"sexo\": \"{{$json.sexo}}\",\n\"eps\": \"{{$json.eps}}\",\n\"telefono\": \"{{$json.telefono}}\",\n\"correo\": \"{{$json.correo}}\",\n\"valid_doc\": {{$json.valid_doc}},\n\"datos_requeridos\": \"{{$json.datos_requeridos}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1680,
+        -128
+      ],
+      "id": "4bad92e3-931d-4280-b936-d091a20d3cae",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI",
+          "mode": "list",
+          "cachedResultName": "DATOS PACIENTES - CHATBOT - ANDES DEL SUR IPS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 96979820,
+          "mode": "list",
+          "cachedResultName": "Pacientes Chatbot",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI/edit#gid=96979820"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Documento de identidad",
+              "lookupValue": "={{ $('Set Doc').item.json.doc }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1232,
+        -128
+      ],
+      "id": "89be2a93-6a45-4723-a7c8-819508753128",
+      "name": "Verificar Paciente Nuevo",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gqknaz3wzGkB42B5",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-14T09:02:53.349Z",
+      "createdAt": "2026-03-14T09:02:53.349Z",
+      "role": "workflow:owner",
+      "workflowId": "NZncd0tzy9UmBKVm",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-15T23:00:01.246Z",
+  "versionId": "b369ce10-21e5-4f1e-8ee1-9a4b40f6e192"
+}
