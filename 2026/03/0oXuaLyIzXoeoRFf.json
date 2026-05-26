@@ -1,0 +1,777 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-04-11T19:50:40.000Z",
+    "createdAt": "2026-04-11T19:49:37.798Z",
+    "versionId": "3bf4763e-dc27-4fc6-95e5-15e38a45a83c",
+    "workflowId": "0oXuaLyIzXoeoRFf",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "ced8aed8-f597-40b3-a7c6-70947686cf6a",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          -144
+        ],
+        "id": "2a36e40e-59e5-49e4-a5cd-33d119b7d254",
+        "name": "Webhook",
+        "webhookId": "ced8aed8-f597-40b3-a7c6-70947686cf6a"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "table": {
+            "__rl": true,
+            "value": "Agenda",
+            "mode": "list",
+            "cachedResultName": "Agenda"
+          },
+          "dataMode": "defineBelow",
+          "columnToMatchOn": "id",
+          "valueToMatchOn": "={{ $json.agenda_code }}",
+          "valuesToSend": {
+            "values": [
+              {
+                "column": "doc_paciente",
+                "value": "={{ $json.doc }}"
+              },
+              {
+                "column": "paciente",
+                "value": "={{ $json.paciente }}"
+              },
+              {
+                "column": "fecha_agendada",
+                "value": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}"
+              },
+              {
+                "column": "estado",
+                "value": "2"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          448,
+          -144
+        ],
+        "id": "47941f86-0a8c-4118-8bde-ab24a854a113",
+        "name": "Agendar Cita",
+        "alwaysOutputData": true,
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "noData",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          896,
+          -144
+        ],
+        "id": "55d7148f-127f-4eb0-8b71-ccb5884b8083",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "fromEmail": "Innovasoft SAS<noreply@innovasoftsas.com>",
+          "toEmail": "={{ $('Formato Datos').item.json.correo }}",
+          "subject": "=Su cita para {{ $('Formato Datos').item.json.medico_tipo }} en Horisoes IPS se encuentra confirmada!",
+          "html": "=<article\n        style=\"font-family: 'Roboto', Arial, sans-serif; color: #707070; border: 1px solid lightgray; border-radius: 20px; width: 650px; margin: 0 auto;\">\n        <header\n            style=\"background-color: rgba(30, 144, 255, 0.10); padding: 20px 10px; border-top-left-radius: 20px; border-top-right-radius: 20px;\">\n<div style=\"width: fit-content; margin: 0px auto;\">           \n\n<h1 style=\"font-size: 18px; text-align: center\">Nueva Cita</h1>\n</div>\n        </header>\n        <section style=\"background-color: white; padding: 15px 45px 25px\">\n            <p style=\"font-size: 15px;\">\n                Estimad@ <strong style=\"color: dodgerblue\">{{ $('Formato Datos').item.json.paciente }}</strong>, tienes una nueva cita.\n            </p>\n            <br />\n            <h2 style=\"font-size: 16px; margin-bottom: 25px; color: dodgerblue; font-weight: bolder;\">\n                Datos de la cita\n            </h2>\n            <div style=\"font-size: 14px;\">\n                <p>\n                    <strong style=\"color: dodgerblue\">Médico:</strong> {{ $('Formato Datos').item.json.medico }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Especialidad:</strong> {{ $('Formato Datos').item.json.medico_tipo.toUpperCase() }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Sede:</strong> Horisoes IPS\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Dirección:</strong> Cl. 15 Nte. #7n 67\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Fecha:</strong> {{ $('Formato Datos').item.json.agenda_fecha }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Hora:</strong> {{ $('Formato Datos').item.json.agenda_hora }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Código de cita:</strong> {{ $('Formato Datos').item.json.agenda_code }}\n                </p>\n            </div>\n            <div style=\"margin-top: 40px\">\n                <a href=\"https://wa.link/f7f2nk\" target=\"_blank\"\n                    style=\"background-color: dodgerblue; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; \">\n                    Cancelar Cita\n                </a>\n            </div>\n            <div style=\"background-color:lightgray; width: 80%; height: 1px; margin-top: 50px;\"></div>\n            <h4 style=\"font-weight: bolder; color: dodgerblue;\">¡IMPORTANTE!</h4>\n            <p style=\"line-height: 2;\">Asistir con su documento de identidad y/o carné. Preséntese con 20 minutos de\n                anticipación. En caso que\n                no pueda asistir a la cita, por favor cancelarla en nuestros canales virtuales, como respuesta a la\n                notificación que llegará a su correo o en nuestra\n                línea de citas. Llevar su cuota moderadora. A la cita debe asistir el paciente. Si la cita es para un\n                menor de edad, el mismo debe asistir acompañado de un adulto. Si su cita requiere orden medica, tenga en\n                cuenta su vigencia y presentarla al momento del anuncio de su cita. Recuerde presentar en físico los\n                resultados de laboratorios, radiología, ecografía u otros.</p>\n        </section>\n    </article>",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.emailSend",
+        "typeVersion": 2.1,
+        "position": [
+          672,
+          -144
+        ],
+        "id": "d5322077-7a8e-4e39-84df-09b8d59726d7",
+        "name": "Enviar Email",
+        "webhookId": "6358ec9c-6a27-4625-8b94-380e31b8ba74",
+        "credentials": {
+          "smtp": {
+            "id": "FVf6SGzz7Mnu6r38",
+            "name": "Hostinger Email"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "QHAvctKjOUWv9o0N",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/QHAvctKjOUWv9o0N",
+            "cachedResultName": "Cancelar Cita"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "code": "={{ $('Formato Datos').item.json.cita_reagendar_code }}"
+            },
+            "matchingColumns": [
+              "code"
+            ],
+            "schema": [
+              {
+                "id": "code",
+                "displayName": "code",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": true,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          1568,
+          -240
+        ],
+        "id": "431920f7-e87b-4bf2-a6b0-72cca8da8408",
+        "name": "Call 'Cancelar Cita'",
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $input.first().json.body;\nconst { doc, paciente, correo, agenda_code, agenda_hora  } = data\n\nconst medico_tipo = data.medico_tipo\n  .toLowerCase()\n  .split(\" \")\n  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))\n  .join(\" \");\n\nconst medico = data.medico.replace(\n  data.medico.includes(\"Dr. \") ? \"Dr. \" : \"Dra. \",\n  \"\",\n);\n\nconst agenda = JSON.parse(data.agenda);\n\nreturn {\n  doc,\n  paciente,\n  correo,\n  agenda_code,\n  medico,\n  medico_tipo,\n  agenda_fecha: `${agenda.dia} de ${agenda.mes_nombre} de ${agenda.año}`,\n  agenda_hora\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          224,
+          -144
+        ],
+        "id": "eb2d3b25-d723-4150-be8f-aad7c13194b8",
+        "name": "Formato Datos"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "jDbKg6dILXbXH9uX",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/jDbKg6dILXbXH9uX",
+            "cachedResultName": "Generar Reporte"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "code": "={{ $('Formato Datos').item.json.agenda_code }}",
+              "doc": "={{ $('Formato Datos').item.json.doc }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "code",
+                "displayName": "code",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "doc",
+                "displayName": "doc",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": true,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          1120,
+          -144
+        ],
+        "id": "7d3ef60a-4c32-40af-ac6f-15c8ba56f2c6",
+        "name": "Call 'Generar Reporte'",
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1568,
+          -48
+        ],
+        "id": "63226894-3823-4b4d-bb6a-e8098b2e7cf0",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "a03f4076-0cb1-4251-a9fe-c087601ed9f2",
+                "leftValue": "={{ $('Formato Datos').item.json.cita_reagendar }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1344,
+          -144
+        ],
+        "id": "096f24ed-3b6e-43c8-a413-72b9443381a5",
+        "name": "Reagendar"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Formato Datos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agendar Cita": {
+        "main": [
+          [
+            {
+              "node": "Enviar Email",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar Email": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formato Datos": {
+        "main": [
+          [
+            {
+              "node": "Agendar Cita",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call 'Cancelar Cita'": {
+        "main": [
+          []
+        ]
+      },
+      "Call 'Generar Reporte'": {
+        "main": [
+          [
+            {
+              "node": "Reagendar",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "Call 'Generar Reporte'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reagendar": {
+        "main": [
+          [
+            {
+              "node": "Call 'Cancelar Cita'",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version 3bf4763e",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "3bf4763e-dc27-4fc6-95e5-15e38a45a83c",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Formato Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agendar Cita": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formato Datos": {
+      "main": [
+        [
+          {
+            "node": "Agendar Cita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Cancelar Cita'": {
+      "main": [
+        []
+      ]
+    },
+    "Call 'Generar Reporte'": {
+      "main": [
+        [
+          {
+            "node": "Reagendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Call 'Generar Reporte'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reagendar": {
+      "main": [
+        [
+          {
+            "node": "Call 'Cancelar Cita'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T15:24:06.519Z",
+  "id": "0oXuaLyIzXoeoRFf",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Agendar Cita",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ced8aed8-f597-40b3-a7c6-70947686cf6a",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        -144
+      ],
+      "id": "2a36e40e-59e5-49e4-a5cd-33d119b7d254",
+      "name": "Webhook",
+      "webhookId": "ced8aed8-f597-40b3-a7c6-70947686cf6a"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": {
+          "__rl": true,
+          "value": "Agenda",
+          "mode": "list",
+          "cachedResultName": "Agenda"
+        },
+        "dataMode": "defineBelow",
+        "columnToMatchOn": "id",
+        "valueToMatchOn": "={{ $json.agenda_code }}",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "doc_paciente",
+              "value": "={{ $json.doc }}"
+            },
+            {
+              "column": "paciente",
+              "value": "={{ $json.paciente }}"
+            },
+            {
+              "column": "fecha_agendada",
+              "value": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}"
+            },
+            {
+              "column": "estado",
+              "value": "2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        448,
+        -144
+      ],
+      "id": "47941f86-0a8c-4118-8bde-ab24a854a113",
+      "name": "Agendar Cita",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        -144
+      ],
+      "id": "55d7148f-127f-4eb0-8b71-ccb5884b8083",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "fromEmail": "Innovasoft SAS<noreply@innovasoftsas.com>",
+        "toEmail": "={{ $('Formato Datos').item.json.correo }}",
+        "subject": "=Su cita para {{ $('Formato Datos').item.json.medico_tipo }} en Horisoes IPS se encuentra confirmada!",
+        "html": "=<article\n        style=\"font-family: 'Roboto', Arial, sans-serif; color: #707070; border: 1px solid lightgray; border-radius: 20px; width: 650px; margin: 0 auto;\">\n        <header\n            style=\"background-color: rgba(30, 144, 255, 0.10); padding: 20px 10px; border-top-left-radius: 20px; border-top-right-radius: 20px;\">\n<div style=\"width: fit-content; margin: 0px auto;\">           \n\n<h1 style=\"font-size: 18px; text-align: center\">Nueva Cita</h1>\n</div>\n        </header>\n        <section style=\"background-color: white; padding: 15px 45px 25px\">\n            <p style=\"font-size: 15px;\">\n                Estimad@ <strong style=\"color: dodgerblue\">{{ $('Formato Datos').item.json.paciente }}</strong>, tienes una nueva cita.\n            </p>\n            <br />\n            <h2 style=\"font-size: 16px; margin-bottom: 25px; color: dodgerblue; font-weight: bolder;\">\n                Datos de la cita\n            </h2>\n            <div style=\"font-size: 14px;\">\n                <p>\n                    <strong style=\"color: dodgerblue\">Médico:</strong> {{ $('Formato Datos').item.json.medico }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Especialidad:</strong> {{ $('Formato Datos').item.json.medico_tipo.toUpperCase() }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Sede:</strong> Horisoes IPS\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Dirección:</strong> Cl. 15 Nte. #7n 67\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Fecha:</strong> {{ $('Formato Datos').item.json.agenda_fecha }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Hora:</strong> {{ $('Formato Datos').item.json.agenda_hora }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Código de cita:</strong> {{ $('Formato Datos').item.json.agenda_code }}\n                </p>\n            </div>\n            <div style=\"margin-top: 40px\">\n                <a href=\"https://wa.link/f7f2nk\" target=\"_blank\"\n                    style=\"background-color: dodgerblue; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; \">\n                    Cancelar Cita\n                </a>\n            </div>\n            <div style=\"background-color:lightgray; width: 80%; height: 1px; margin-top: 50px;\"></div>\n            <h4 style=\"font-weight: bolder; color: dodgerblue;\">¡IMPORTANTE!</h4>\n            <p style=\"line-height: 2;\">Asistir con su documento de identidad y/o carné. Preséntese con 20 minutos de\n                anticipación. En caso que\n                no pueda asistir a la cita, por favor cancelarla en nuestros canales virtuales, como respuesta a la\n                notificación que llegará a su correo o en nuestra\n                línea de citas. Llevar su cuota moderadora. A la cita debe asistir el paciente. Si la cita es para un\n                menor de edad, el mismo debe asistir acompañado de un adulto. Si su cita requiere orden medica, tenga en\n                cuenta su vigencia y presentarla al momento del anuncio de su cita. Recuerde presentar en físico los\n                resultados de laboratorios, radiología, ecografía u otros.</p>\n        </section>\n    </article>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        -144
+      ],
+      "id": "d5322077-7a8e-4e39-84df-09b8d59726d7",
+      "name": "Enviar Email",
+      "webhookId": "6358ec9c-6a27-4625-8b94-380e31b8ba74",
+      "credentials": {
+        "smtp": {
+          "id": "FVf6SGzz7Mnu6r38",
+          "name": "Hostinger Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "QHAvctKjOUWv9o0N",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/QHAvctKjOUWv9o0N",
+          "cachedResultName": "Cancelar Cita"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "code": "={{ $('Formato Datos').item.json.cita_reagendar_code }}"
+          },
+          "matchingColumns": [
+            "code"
+          ],
+          "schema": [
+            {
+              "id": "code",
+              "displayName": "code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1568,
+        -240
+      ],
+      "id": "431920f7-e87b-4bf2-a6b0-72cca8da8408",
+      "name": "Call 'Cancelar Cita'",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json.body;\nconst { doc, paciente, correo, agenda_code, agenda_hora  } = data\n\nconst medico_tipo = data.medico_tipo\n  .toLowerCase()\n  .split(\" \")\n  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))\n  .join(\" \");\n\nconst medico = data.medico.replace(\n  data.medico.includes(\"Dr. \") ? \"Dr. \" : \"Dra. \",\n  \"\",\n);\n\nconst agenda = JSON.parse(data.agenda);\n\nreturn {\n  doc,\n  paciente,\n  correo,\n  agenda_code,\n  medico,\n  medico_tipo,\n  agenda_fecha: `${agenda.dia} de ${agenda.mes_nombre} de ${agenda.año}`,\n  agenda_hora\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -144
+      ],
+      "id": "eb2d3b25-d723-4150-be8f-aad7c13194b8",
+      "name": "Formato Datos"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "jDbKg6dILXbXH9uX",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/jDbKg6dILXbXH9uX",
+          "cachedResultName": "Generar Reporte"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "code": "={{ $('Formato Datos').item.json.agenda_code }}",
+            "doc": "={{ $('Formato Datos').item.json.doc }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "code",
+              "displayName": "code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "doc",
+              "displayName": "doc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1120,
+        -144
+      ],
+      "id": "7d3ef60a-4c32-40af-ac6f-15c8ba56f2c6",
+      "name": "Call 'Generar Reporte'",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        -48
+      ],
+      "id": "63226894-3823-4b4d-bb6a-e8098b2e7cf0",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a03f4076-0cb1-4251-a9fe-c087601ed9f2",
+              "leftValue": "={{ $('Formato Datos').item.json.cita_reagendar }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        -144
+      ],
+      "id": "096f24ed-3b6e-43c8-a413-72b9443381a5",
+      "name": "Reagendar"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T15:24:06.521Z",
+      "createdAt": "2026-03-15T15:24:06.521Z",
+      "role": "workflow:owner",
+      "workflowId": "0oXuaLyIzXoeoRFf",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-11T19:49:37.797Z",
+  "versionId": "3bf4763e-dc27-4fc6-95e5-15e38a45a83c"
+}
