@@ -1,0 +1,455 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-16T14:31:53.000Z",
+    "createdAt": "2026-03-16T14:31:41.467Z",
+    "versionId": "54558907-14a3-4866-b893-5ecb4c848f85",
+    "workflowId": "LBWuGIYSfCk3DSk0",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "9b18cf0b-610e-48e5-bffc-2e059c1d243d",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "8ae86d43-8685-4884-acef-ab76adce2309",
+        "name": "Webhook",
+        "webhookId": "9b18cf0b-610e-48e5-bffc-2e059c1d243d"
+      },
+      {
+        "parameters": {
+          "jsCode": "const { agenda_jornada, agenda_sel, code_med } = $input.first().json.body;\n\nconst { dia, mes } = JSON.parse(agenda_sel);\nconst hora_inf = agenda_jornada == \"Mañana\" ? \"06:00\" : \"12:00\";\nconst hora_sup = agenda_jornada == \"Mañana\" ? \"11:59\" : \"18:00\";\n\nreturn {\n  dia,\n  mes,\n  hora_inf,\n  hora_sup,\n  code_med,\n  agenda_sel\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          224,
+          0
+        ],
+        "id": "8202a101-0992-4f0c-923b-e1aa2df92559",
+        "name": "Formato Datos"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT `id`, `hora_consulta` AS 'agenda_hora'\nFROM u125634063_ins_andes.Agenda \nWHERE day(fecha_consulta) = $1 AND\nmonth(fecha_consulta) = $2 AND\nId_med = $3 AND\nhora_consulta >= $4 AND hora_consulta <= $5\nAND estado = 1",
+          "options": {
+            "queryReplacement": "={{ $json.dia }},{{ $json.mes }},{{ $json.code_med }},{{ $json.hora_inf }},{{ $json.hora_sup }}"
+          }
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          448,
+          0
+        ],
+        "id": "fa8743ec-8557-4773-8af1-e2d8419800ad",
+        "name": "Consultar Agenda Horas",
+        "alwaysOutputData": true,
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"agenda_horas\": \"null\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          896,
+          96
+        ],
+        "id": "b6bbe14a-70ad-49cc-928c-aad3def7f7e0",
+        "name": "Sin Horas Disponibles"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "306e1f21-b482-449a-b6f6-5eddc2e26f18",
+                "leftValue": "={{ $json }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "object",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          672,
+          0
+        ],
+        "id": "81b85fa1-30d7-4b89-98d4-218512fd1ad9",
+        "name": "Horas Disponibles"
+      },
+      {
+        "parameters": {
+          "jsCode": "const agendaHoras = $input.all();\n\nconst horasDisp = agendaHoras.map((agenda, index) => {\n  const defHora = new Date();\n  const [h, m] = agenda.json.agenda_hora.split(\":\");\n  defHora.setHours(parseInt(h), parseInt(m));\n\n  const formatoHora = defHora.toLocaleTimeString(\"es-CO\", {\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    hour12: true,\n  });\n\n  return {\n    id: index + 1,\n    agenda_code: agenda.json.id,\n    hora: formatoHora,\n  };\n});\n\nconst text = horasDisp.map(({ id, hora }) => `${id}. ${hora}`).join(\"\\n\");\n\nreturn {\n  agenda_horas: horasDisp,\n  text,\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          896,
+          -96
+        ],
+        "id": "23df908a-2cff-4614-83a8-6dd3aeca0666",
+        "name": "Formato Horas"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1120,
+          -96
+        ],
+        "id": "7a3c4b91-7e2a-4ce0-80f4-d4a294cbe7e5",
+        "name": "Respond to Webhook"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Formato Datos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formato Datos": {
+        "main": [
+          [
+            {
+              "node": "Consultar Agenda Horas",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consultar Agenda Horas": {
+        "main": [
+          [
+            {
+              "node": "Horas Disponibles",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Horas Disponibles": {
+        "main": [
+          [
+            {
+              "node": "Formato Horas",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Sin Horas Disponibles",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formato Horas": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version 54558907",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "54558907-14a3-4866-b893-5ecb4c848f85",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Formato Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formato Datos": {
+      "main": [
+        [
+          {
+            "node": "Consultar Agenda Horas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Agenda Horas": {
+      "main": [
+        [
+          {
+            "node": "Horas Disponibles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Horas Disponibles": {
+      "main": [
+        [
+          {
+            "node": "Formato Horas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sin Horas Disponibles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formato Horas": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T12:56:09.148Z",
+  "id": "LBWuGIYSfCk3DSk0",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Consultar Agenda Horas",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "9b18cf0b-610e-48e5-bffc-2e059c1d243d",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8ae86d43-8685-4884-acef-ab76adce2309",
+      "name": "Webhook",
+      "webhookId": "9b18cf0b-610e-48e5-bffc-2e059c1d243d"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { agenda_jornada, agenda_sel, code_med } = $input.first().json.body;\n\nconst { dia, mes } = JSON.parse(agenda_sel);\nconst hora_inf = agenda_jornada == \"Mañana\" ? \"06:00\" : \"12:00\";\nconst hora_sup = agenda_jornada == \"Mañana\" ? \"11:59\" : \"18:00\";\n\nreturn {\n  dia,\n  mes,\n  hora_inf,\n  hora_sup,\n  code_med,\n  agenda_sel\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "8202a101-0992-4f0c-923b-e1aa2df92559",
+      "name": "Formato Datos"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT `id`, `hora_consulta` AS 'agenda_hora'\nFROM u125634063_ins_andes.Agenda \nWHERE day(fecha_consulta) = $1 AND\nmonth(fecha_consulta) = $2 AND\nId_med = $3 AND\nhora_consulta >= $4 AND hora_consulta <= $5\nAND estado = 1",
+        "options": {
+          "queryReplacement": "={{ $json.dia }},{{ $json.mes }},{{ $json.code_med }},{{ $json.hora_inf }},{{ $json.hora_sup }}"
+        }
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "fa8743ec-8557-4773-8af1-e2d8419800ad",
+      "name": "Consultar Agenda Horas",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"agenda_horas\": \"null\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        96
+      ],
+      "id": "b6bbe14a-70ad-49cc-928c-aad3def7f7e0",
+      "name": "Sin Horas Disponibles"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "306e1f21-b482-449a-b6f6-5eddc2e26f18",
+              "leftValue": "={{ $json }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "id": "81b85fa1-30d7-4b89-98d4-218512fd1ad9",
+      "name": "Horas Disponibles"
+    },
+    {
+      "parameters": {
+        "jsCode": "const agendaHoras = $input.all();\n\nconst horasDisp = agendaHoras.map((agenda, index) => {\n  const defHora = new Date();\n  const [h, m] = agenda.json.agenda_hora.split(\":\");\n  defHora.setHours(parseInt(h), parseInt(m));\n\n  const formatoHora = defHora.toLocaleTimeString(\"es-CO\", {\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    hour12: true,\n  });\n\n  return {\n    id: index + 1,\n    agenda_code: agenda.json.id,\n    hora: formatoHora,\n  };\n});\n\nconst text = horasDisp.map(({ id, hora }) => `${id}. ${hora}`).join(\"\\n\");\n\nreturn {\n  agenda_horas: horasDisp,\n  text,\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        -96
+      ],
+      "id": "23df908a-2cff-4614-83a8-6dd3aeca0666",
+      "name": "Formato Horas"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1120,
+        -96
+      ],
+      "id": "7a3c4b91-7e2a-4ce0-80f4-d4a294cbe7e5",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T12:56:09.151Z",
+      "createdAt": "2026-03-15T12:56:09.151Z",
+      "role": "workflow:owner",
+      "workflowId": "LBWuGIYSfCk3DSk0",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-16T14:31:41.467Z",
+  "versionId": "54558907-14a3-4866-b893-5ecb4c848f85"
+}
