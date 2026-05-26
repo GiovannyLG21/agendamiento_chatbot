@@ -1,0 +1,157 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-16T19:22:20.000Z",
+    "createdAt": "2026-03-16T19:22:15.379Z",
+    "versionId": "136ae10e-49a4-4fcd-913c-a462243272c0",
+    "workflowId": "hBCUBGQg1AXz9851",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "2ce94fdb-fb3c-42e6-8f07-102566511ab6",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "c111203c-0518-462a-9150-b4ff6ead3bd3",
+        "name": "Webhook",
+        "webhookId": "2ce94fdb-fb3c-42e6-8f07-102566511ab6"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"especialidad\": \"{{ $json.body.cita_especialidad }}\",\n  \"cita_reagendar\": \"true\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          208,
+          0
+        ],
+        "id": "74b70cea-e53f-4ebc-bf6c-685fc62dfa16",
+        "name": "Respond to Webhook"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version 136ae10e",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "136ae10e-49a4-4fcd-913c-a462243272c0",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T16:20:30.604Z",
+  "id": "hBCUBGQg1AXz9851",
+  "isArchived": false,
+  "meta": null,
+  "name": "Modo Reagendar",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2ce94fdb-fb3c-42e6-8f07-102566511ab6",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c111203c-0518-462a-9150-b4ff6ead3bd3",
+      "name": "Webhook",
+      "webhookId": "2ce94fdb-fb3c-42e6-8f07-102566511ab6"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"especialidad\": \"{{ $json.body.cita_especialidad }}\",\n  \"cita_reagendar\": \"true\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        208,
+        0
+      ],
+      "id": "74b70cea-e53f-4ebc-bf6c-685fc62dfa16",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T16:20:30.608Z",
+      "createdAt": "2026-03-15T16:20:30.608Z",
+      "role": "workflow:owner",
+      "workflowId": "hBCUBGQg1AXz9851",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-16T19:22:15.378Z",
+  "versionId": "136ae10e-49a4-4fcd-913c-a462243272c0"
+}
