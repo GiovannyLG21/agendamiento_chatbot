@@ -1,0 +1,441 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-19T11:51:47.000Z",
+    "createdAt": "2026-03-19T11:51:23.703Z",
+    "versionId": "eda47cb4-94c1-4b72-93ca-45e5ecc18405",
+    "workflowId": "w6xYkDlHBiZNlK1a",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "5f34afe7-199e-423b-bf56-4fe8967249e4",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          16,
+          -112
+        ],
+        "id": "a7de419d-d54b-4c27-9480-ea296b9d0e09",
+        "name": "Webhook",
+        "webhookId": "5f34afe7-199e-423b-bf56-4fe8967249e4"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"cita_reagendar\": false\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          240,
+          -112
+        ],
+        "id": "389432ef-ff01-418f-8349-34768769ce39",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU",
+            "mode": "list",
+            "cachedResultName": "ORDENES MEDICAS - CHATBOT - ANDES DEL SUR IPS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1725535083,
+            "mode": "list",
+            "cachedResultName": "Ordenes Medicas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit#gid=1725535083"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Documento de identidad",
+                "lookupValue": "={{ $json.body.doc }}"
+              },
+              {
+                "lookupColumn": "Codigo cita",
+                "lookupValue": "="
+              }
+            ]
+          },
+          "options": {
+            "returnFirstMatch": true
+          }
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          464,
+          -112
+        ],
+        "id": "2b21d5c3-ddb7-45c9-8e63-6c648db8a19a",
+        "name": "Buscar Orden Sin Asignar",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Gqknaz3wzGkB42B5",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "delete",
+          "documentId": {
+            "__rl": true,
+            "value": "1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU",
+            "mode": "list",
+            "cachedResultName": "ORDENES MEDICAS - CHATBOT - ANDES DEL SUR IPS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1725535083,
+            "mode": "list",
+            "cachedResultName": "Ordenes Medicas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit#gid=1725535083"
+          },
+          "startIndex": "={{ $json.row_number }}"
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          688,
+          -112
+        ],
+        "id": "899be604-f931-46cc-b2e5-d125597c0ffc",
+        "name": "Eliminar Orden",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Gqknaz3wzGkB42B5",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "deleteFile",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $('Buscar Orden Sin Asignar').item.json['Orden medica'] }}",
+            "mode": "url"
+          },
+          "options": {
+            "deletePermanently": true
+          }
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          896,
+          -112
+        ],
+        "id": "d941a58b-4e31-43d0-b436-70b87044d006",
+        "name": "Eliminar Archivo",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "j1WWmE28WzRWRpK0",
+            "name": "Google Drive account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "Buscar Orden Sin Asignar",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Orden Sin Asignar": {
+        "main": [
+          [
+            {
+              "node": "Eliminar Orden",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Eliminar Orden": {
+        "main": [
+          [
+            {
+              "node": "Eliminar Archivo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version eda47cb4",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "eda47cb4-94c1-4b72-93ca-45e5ecc18405",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Buscar Orden Sin Asignar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Orden Sin Asignar": {
+      "main": [
+        [
+          {
+            "node": "Eliminar Orden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eliminar Orden": {
+      "main": [
+        [
+          {
+            "node": "Eliminar Archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T10:03:24.532Z",
+  "id": "w6xYkDlHBiZNlK1a",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Modo Agendar",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5f34afe7-199e-423b-bf56-4fe8967249e4",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        16,
+        -112
+      ],
+      "id": "a7de419d-d54b-4c27-9480-ea296b9d0e09",
+      "name": "Webhook",
+      "webhookId": "5f34afe7-199e-423b-bf56-4fe8967249e4"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"cita_reagendar\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        240,
+        -112
+      ],
+      "id": "389432ef-ff01-418f-8349-34768769ce39",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU",
+          "mode": "list",
+          "cachedResultName": "ORDENES MEDICAS - CHATBOT - ANDES DEL SUR IPS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1725535083,
+          "mode": "list",
+          "cachedResultName": "Ordenes Medicas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit#gid=1725535083"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Documento de identidad",
+              "lookupValue": "={{ $json.body.doc }}"
+            },
+            {
+              "lookupColumn": "Codigo cita",
+              "lookupValue": "="
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        -112
+      ],
+      "id": "2b21d5c3-ddb7-45c9-8e63-6c648db8a19a",
+      "name": "Buscar Orden Sin Asignar",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gqknaz3wzGkB42B5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU",
+          "mode": "list",
+          "cachedResultName": "ORDENES MEDICAS - CHATBOT - ANDES DEL SUR IPS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1725535083,
+          "mode": "list",
+          "cachedResultName": "Ordenes Medicas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit#gid=1725535083"
+        },
+        "startIndex": "={{ $json.row_number }}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        -112
+      ],
+      "id": "899be604-f931-46cc-b2e5-d125597c0ffc",
+      "name": "Eliminar Orden",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gqknaz3wzGkB42B5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Buscar Orden Sin Asignar').item.json['Orden medica'] }}",
+          "mode": "url"
+        },
+        "options": {
+          "deletePermanently": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        896,
+        -112
+      ],
+      "id": "d941a58b-4e31-43d0-b436-70b87044d006",
+      "name": "Eliminar Archivo",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "j1WWmE28WzRWRpK0",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T10:03:24.536Z",
+      "createdAt": "2026-03-15T10:03:24.536Z",
+      "role": "workflow:owner",
+      "workflowId": "w6xYkDlHBiZNlK1a",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-19T11:51:34.740Z",
+  "versionId": "eda47cb4-94c1-4b72-93ca-45e5ecc18405"
+}
