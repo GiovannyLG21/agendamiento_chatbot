@@ -1,0 +1,261 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-15T14:18:53.000Z",
+    "createdAt": "2026-03-15T14:17:43.453Z",
+    "versionId": "95d09371-fe61-4dac-a077-1b8ff7265b07",
+    "workflowId": "t2TaSBfsOHgr3dO5",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "92934623-c118-40cb-955a-759e9e2419b3",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "c97b6ef5-b18d-443b-9a71-c9e6e8c0fb02",
+        "name": "Webhook",
+        "webhookId": "92934623-c118-40cb-955a-759e9e2419b3"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "table": {
+            "__rl": true,
+            "value": "Pacientes",
+            "mode": "list",
+            "cachedResultName": "Pacientes"
+          },
+          "dataMode": "defineBelow",
+          "columnToMatchOn": "num_documento",
+          "valueToMatchOn": "={{ $json.body.doc }}",
+          "valuesToSend": {
+            "values": [
+              {
+                "column": "telefono",
+                "value": "={{ $json.body.telefono }}"
+              },
+              {
+                "column": "correo",
+                "value": "={{ $json.body.correo }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          224,
+          0
+        ],
+        "id": "bb52a156-2570-4a65-aaf1-3cb3376c9933",
+        "name": "Update rows in a table",
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "noData",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          448,
+          0
+        ],
+        "id": "546e001b-9379-4bd1-92a8-43ae5528f973",
+        "name": "Respond to Webhook"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Update rows in a table",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update rows in a table": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft Sas",
+    "name": "Version 95d09371",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "95d09371-fe61-4dac-a077-1b8ff7265b07",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Update rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T14:13:11.831Z",
+  "id": "t2TaSBfsOHgr3dO5",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Actualizar Correo y Telefono",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "92934623-c118-40cb-955a-759e9e2419b3",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c97b6ef5-b18d-443b-9a71-c9e6e8c0fb02",
+      "name": "Webhook",
+      "webhookId": "92934623-c118-40cb-955a-759e9e2419b3"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": {
+          "__rl": true,
+          "value": "Pacientes",
+          "mode": "list",
+          "cachedResultName": "Pacientes"
+        },
+        "dataMode": "defineBelow",
+        "columnToMatchOn": "num_documento",
+        "valueToMatchOn": "={{ $json.body.doc }}",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "telefono",
+              "value": "={{ $json.body.telefono }}"
+            },
+            {
+              "column": "correo",
+              "value": "={{ $json.body.correo }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "bb52a156-2570-4a65-aaf1-3cb3376c9933",
+      "name": "Update rows in a table",
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "546e001b-9379-4bd1-92a8-43ae5528f973",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T14:13:11.834Z",
+      "createdAt": "2026-03-15T14:13:11.834Z",
+      "role": "workflow:owner",
+      "workflowId": "t2TaSBfsOHgr3dO5",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-15T14:19:00.872Z",
+  "versionId": "95d09371-fe61-4dac-a077-1b8ff7265b07"
+}
