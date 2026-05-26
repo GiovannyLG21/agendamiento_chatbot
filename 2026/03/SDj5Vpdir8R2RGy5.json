@@ -1,0 +1,409 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-15T11:35:23.000Z",
+    "createdAt": "2026-03-15T11:34:28.570Z",
+    "versionId": "a33b5234-03f3-442d-876c-0f4ee91cbed3",
+    "workflowId": "SDj5Vpdir8R2RGy5",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "2834fd70-1831-4d96-9787-57c385ed9f10",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "6a460500-3a1f-4219-a71d-a693ef51e0b2",
+        "name": "Webhook",
+        "webhookId": "2834fd70-1831-4d96-9787-57c385ed9f10"
+      },
+      {
+        "parameters": {
+          "jsCode": "const { medico_tipo, paciente_edad } = $input.first().json.body\n\nconst consultaCodes = {\n  \"Médico General\": \"CMA001\",\n  \"Médico Especialista\": parseInt(paciente_edad) >= 18 ? 'CMA002' : 'CMA003' \n}\n\nreturn {\n  consulta_code: consultaCodes[medico_tipo]\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          208,
+          0
+        ],
+        "id": "793ecac3-770e-45c2-87ce-8fd1d9b9d50a",
+        "name": "Definir Codigo Consulta"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "5e33cd27-45d1-4e3a-8b38-5f0c7feb712f",
+                "leftValue": "={{ $json.consulta_code }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          416,
+          0
+        ],
+        "id": "091667e3-7150-41b8-b5c1-1ec9dfaa78b0",
+        "name": "Codigo Encontrado"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"consulta_code\": \"null\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          624,
+          96
+        ],
+        "id": "d39958d4-3262-49fb-95bb-23af6f7cea0a",
+        "name": "Codigo No Encontrado"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT `consulta` AS 'consulta_tipo'\nFROM u125634063_ins_andes.Consultas\nWHERE `codigo` = $1",
+          "options": {
+            "queryReplacement": "={{ $json.consulta_code }}"
+          }
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          624,
+          -80
+        ],
+        "id": "23cff22c-de34-4521-b45e-610c93536cbc",
+        "name": "Consultar Tipo Consulta",
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"consulta_tipo\": \"{{ $json.consulta_tipo }}\",\n  \"consulta_code\": \"{{ $('Codigo Encontrado').item.json.consulta_code }}\"\n} ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          832,
+          -80
+        ],
+        "id": "be987bef-6366-44fe-85b6-cfb0909bc39e",
+        "name": "Respond to Webhook"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Definir Codigo Consulta",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Definir Codigo Consulta": {
+        "main": [
+          [
+            {
+              "node": "Codigo Encontrado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Codigo Encontrado": {
+        "main": [
+          [
+            {
+              "node": "Consultar Tipo Consulta",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Codigo No Encontrado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consultar Tipo Consulta": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft Sas",
+    "name": "Version a33b5234",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "a33b5234-03f3-442d-876c-0f4ee91cbed3",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Definir Codigo Consulta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Definir Codigo Consulta": {
+      "main": [
+        [
+          {
+            "node": "Codigo Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Codigo Encontrado": {
+      "main": [
+        [
+          {
+            "node": "Consultar Tipo Consulta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Codigo No Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Tipo Consulta": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T10:52:24.820Z",
+  "id": "SDj5Vpdir8R2RGy5",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Consultar Tipo Cita",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2834fd70-1831-4d96-9787-57c385ed9f10",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6a460500-3a1f-4219-a71d-a693ef51e0b2",
+      "name": "Webhook",
+      "webhookId": "2834fd70-1831-4d96-9787-57c385ed9f10"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { medico_tipo, paciente_edad } = $input.first().json.body\n\nconst consultaCodes = {\n  \"Médico General\": \"CMA001\",\n  \"Médico Especialista\": parseInt(paciente_edad) >= 18 ? 'CMA002' : 'CMA003' \n}\n\nreturn {\n  consulta_code: consultaCodes[medico_tipo]\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "793ecac3-770e-45c2-87ce-8fd1d9b9d50a",
+      "name": "Definir Codigo Consulta"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5e33cd27-45d1-4e3a-8b38-5f0c7feb712f",
+              "leftValue": "={{ $json.consulta_code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "091667e3-7150-41b8-b5c1-1ec9dfaa78b0",
+      "name": "Codigo Encontrado"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"consulta_code\": \"null\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        624,
+        96
+      ],
+      "id": "d39958d4-3262-49fb-95bb-23af6f7cea0a",
+      "name": "Codigo No Encontrado"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT `consulta` AS 'consulta_tipo'\nFROM u125634063_ins_andes.Consultas\nWHERE `codigo` = $1",
+        "options": {
+          "queryReplacement": "={{ $json.consulta_code }}"
+        }
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        624,
+        -80
+      ],
+      "id": "23cff22c-de34-4521-b45e-610c93536cbc",
+      "name": "Consultar Tipo Consulta",
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"consulta_tipo\": \"{{ $json.consulta_tipo }}\",\n  \"consulta_code\": \"{{ $('Codigo Encontrado').item.json.consulta_code }}\"\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        832,
+        -80
+      ],
+      "id": "be987bef-6366-44fe-85b6-cfb0909bc39e",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T10:52:24.822Z",
+      "createdAt": "2026-03-15T10:52:24.822Z",
+      "role": "workflow:owner",
+      "workflowId": "SDj5Vpdir8R2RGy5",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-16T11:44:00.903Z",
+  "versionId": "a33b5234-03f3-442d-876c-0f4ee91cbed3"
+}
