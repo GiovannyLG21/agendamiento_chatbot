@@ -1,0 +1,635 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-17T19:51:16.000Z",
+    "createdAt": "2026-03-17T19:50:48.065Z",
+    "versionId": "159b95db-a32f-45d4-aae6-cbc6881c07bd",
+    "workflowId": "Eq9JQQuv4NlHQPvk",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "0c50882e-2a99-4b2d-8a9e-84d9d1dfd157",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "719bd95e-b91b-404c-863e-c2b4f37a03a6",
+        "name": "Webhook",
+        "webhookId": "0c50882e-2a99-4b2d-8a9e-84d9d1dfd157"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU",
+            "mode": "list",
+            "cachedResultName": "ORDENES MEDICAS - CHATBOT - ANDES DEL SUR IPS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1725535083,
+            "mode": "list",
+            "cachedResultName": "Ordenes Medicas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit#gid=1725535083"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Documento de identidad",
+                "lookupValue": "={{ $json.body.doc }}"
+              },
+              {
+                "lookupColumn": "Codigo cita",
+                "lookupValue": "="
+              }
+            ]
+          },
+          "options": {
+            "returnFirstMatch": true
+          }
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          208,
+          0
+        ],
+        "id": "498801c6-8486-42e1-a206-037714c10317",
+        "name": "Buscar Orden",
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Gqknaz3wzGkB42B5",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "fb993501-334b-4441-aee3-3fba067b9d17",
+                "leftValue": "={{ $json.row_number }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          416,
+          0
+        ],
+        "id": "b6490d06-1423-4d69-91ae-d8974a780784",
+        "name": "Orden Encontrada"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"agenda_orden\": false\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          624,
+          96
+        ],
+        "id": "562d9fe2-b4dc-441b-b3ef-75fa57a098b3",
+        "name": "Orden No Encontrada"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU",
+            "mode": "list",
+            "cachedResultName": "ORDENES MEDICAS - CHATBOT - ANDES DEL SUR IPS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1725535083,
+            "mode": "list",
+            "cachedResultName": "Ordenes Medicas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit#gid=1725535083"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Codigo cita": "={{ $('Webhook').item.json.body.agenda_code }}",
+              "row_number": "={{ $json.row_number }}"
+            },
+            "matchingColumns": [
+              "row_number"
+            ],
+            "schema": [
+              {
+                "id": "Marca temporal",
+                "displayName": "Marca temporal",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Documento de identidad",
+                "displayName": "Documento de identidad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Codigo cita",
+                "displayName": "Codigo cita",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Orden medica",
+                "displayName": "Orden medica",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          624,
+          -96
+        ],
+        "id": "407bcee3-eca4-42ff-a745-9e1bdfe51a16",
+        "name": "Asignar Codigo Cita",
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Gqknaz3wzGkB42B5",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"agenda_orden\": true\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          832,
+          -96
+        ],
+        "id": "eb8f79be-484d-4001-bbd1-f5127d300f50",
+        "name": "Respond to Webhook"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Buscar Orden",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Orden": {
+        "main": [
+          [
+            {
+              "node": "Orden Encontrada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Orden Encontrada": {
+        "main": [
+          [
+            {
+              "node": "Asignar Codigo Cita",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Orden No Encontrada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Asignar Codigo Cita": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version 159b95db",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "159b95db-a32f-45d4-aae6-cbc6881c07bd",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Buscar Orden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Orden": {
+      "main": [
+        [
+          {
+            "node": "Orden Encontrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orden Encontrada": {
+      "main": [
+        [
+          {
+            "node": "Asignar Codigo Cita",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Orden No Encontrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asignar Codigo Cita": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T15:05:35.904Z",
+  "id": "Eq9JQQuv4NlHQPvk",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Validar Orden Cargada",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "0c50882e-2a99-4b2d-8a9e-84d9d1dfd157",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "719bd95e-b91b-404c-863e-c2b4f37a03a6",
+      "name": "Webhook",
+      "webhookId": "0c50882e-2a99-4b2d-8a9e-84d9d1dfd157"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU",
+          "mode": "list",
+          "cachedResultName": "ORDENES MEDICAS - CHATBOT - ANDES DEL SUR IPS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1725535083,
+          "mode": "list",
+          "cachedResultName": "Ordenes Medicas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit#gid=1725535083"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Documento de identidad",
+              "lookupValue": "={{ $json.body.doc }}"
+            },
+            {
+              "lookupColumn": "Codigo cita",
+              "lookupValue": "="
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "498801c6-8486-42e1-a206-037714c10317",
+      "name": "Buscar Orden",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gqknaz3wzGkB42B5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fb993501-334b-4441-aee3-3fba067b9d17",
+              "leftValue": "={{ $json.row_number }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "b6490d06-1423-4d69-91ae-d8974a780784",
+      "name": "Orden Encontrada"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"agenda_orden\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        624,
+        96
+      ],
+      "id": "562d9fe2-b4dc-441b-b3ef-75fa57a098b3",
+      "name": "Orden No Encontrada"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU",
+          "mode": "list",
+          "cachedResultName": "ORDENES MEDICAS - CHATBOT - ANDES DEL SUR IPS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1725535083,
+          "mode": "list",
+          "cachedResultName": "Ordenes Medicas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit#gid=1725535083"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Codigo cita": "={{ $('Webhook').item.json.body.agenda_code }}",
+            "row_number": "={{ $json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Marca temporal",
+              "displayName": "Marca temporal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Documento de identidad",
+              "displayName": "Documento de identidad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Codigo cita",
+              "displayName": "Codigo cita",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Orden medica",
+              "displayName": "Orden medica",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "407bcee3-eca4-42ff-a745-9e1bdfe51a16",
+      "name": "Asignar Codigo Cita",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gqknaz3wzGkB42B5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"agenda_orden\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        832,
+        -96
+      ],
+      "id": "eb8f79be-484d-4001-bbd1-f5127d300f50",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T15:05:35.908Z",
+      "createdAt": "2026-03-15T15:05:35.908Z",
+      "role": "workflow:owner",
+      "workflowId": "Eq9JQQuv4NlHQPvk",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-17T19:50:48.065Z",
+  "versionId": "159b95db-a32f-45d4-aae6-cbc6881c07bd"
+}
