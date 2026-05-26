@@ -1,0 +1,1021 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-16T18:44:49.000Z",
+    "createdAt": "2026-03-16T18:44:00.312Z",
+    "versionId": "9407fe6d-d65e-432b-bcca-a9993a432115",
+    "workflowId": "yXOyOWMIiQoTMj1d",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "f2a2de5b-b1b2-49a8-966e-2a6ed5f22c29",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "b321e04e-a069-4009-81c8-06a8490dd3e0",
+        "name": "Webhook",
+        "webhookId": "f2a2de5b-b1b2-49a8-966e-2a6ed5f22c29"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"datos_cargados\": {{ $json.row_number ? true : false }},\n  \"datos_requeridos\": {{ $json.row_number ? false : true }}\n} ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          448,
+          0
+        ],
+        "id": "e77d8ec1-7e20-475b-985a-22a75e23fa1d",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI",
+            "mode": "list",
+            "cachedResultName": "DATOS PACIENTES - CHATBOT - ANDES DEL SUR IPS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 96979820,
+            "mode": "list",
+            "cachedResultName": "Pacientes Chatbot",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI/edit#gid=96979820"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Documento de identidad",
+                "lookupValue": "={{ $json.body.doc }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          224,
+          0
+        ],
+        "id": "0a294c70-ee17-42c9-b977-b071d8287f82",
+        "name": "Buscar Datos Cargados",
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Gqknaz3wzGkB42B5",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc",
+            "mode": "list",
+            "cachedResultName": "DATOS CHATBOT - ANDES DEL SUR IPS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 752320222,
+            "mode": "list",
+            "cachedResultName": "Pacientes Nuevos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit#gid=752320222"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "id": "={{ $json.id }}",
+              "tipo_doc": "={{ $json.tipo_doc }}",
+              "nombre1": "={{ $json.nombre1 }}",
+              "nombre2": "={{ $json.nombre2 }}",
+              "num_documento": "={{ $json.num_documento }}",
+              "apellido1": "={{ $json.apellido1 }}",
+              "apellido2": "={{ $json.apellido2 }}",
+              "telefono": "={{ $json.telefono }}",
+              "correo": "={{ $json.correo }}",
+              "sexo": "={{ $json.sexo }}",
+              "fecha_nacimiento": "={{ $json.fecha_nacimiento }}",
+              "eps": "={{ $json.eps }}",
+              "telefono acudiente": "={{ $('Buscar Datos Cargados').item.json['Teléfono acudiente'] }}",
+              "parentesco acudiente": "={{ $('Buscar Datos Cargados').item.json['Parentesco acudiente'] }}",
+              "acudiente": "={{ $('Buscar Datos Cargados').item.json.Acudiente }}",
+              "pertenencia etnica": "={{ $('Buscar Datos Cargados').item.json['Pertenencia Étnica'] }}",
+              "estado civil": "={{ $('Buscar Datos Cargados').item.json['Estado Civil'] }}",
+              "nivel educativo": "={{ $('Buscar Datos Cargados').item.json['Nivel educativo'] }}",
+              "ocupacion": "={{ $('Buscar Datos Cargados').item.json['Ocupación'] }}",
+              "zona": "={{ $('Buscar Datos Cargados').item.json.Zona }}",
+              "direccion": "={{ $('Buscar Datos Cargados').item.json['Dirección'] }}",
+              "municipio": "={{ $('Buscar Datos Cargados').item.json.Municipio }}",
+              "regimen": "={{ $('Buscar Datos Cargados').item.json.Regimen }}",
+              "tipo de afiliado": "={{ $('Buscar Datos Cargados').item.json['Tipo de afiliado'] }}",
+              "lugar_nacimiento": "={{ $('Buscar Datos Cargados').item.json['Lugar de Nacimiento'] }}"
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "tipo_doc",
+                "displayName": "tipo_doc",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "num_documento",
+                "displayName": "num_documento",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nombre1",
+                "displayName": "nombre1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nombre2",
+                "displayName": "nombre2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "apellido1",
+                "displayName": "apellido1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "apellido2",
+                "displayName": "apellido2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "correo",
+                "displayName": "correo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "sexo",
+                "displayName": "sexo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha_nacimiento",
+                "displayName": "fecha_nacimiento",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "lugar_nacimiento",
+                "displayName": "lugar_nacimiento",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "eps",
+                "displayName": "eps",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "regimen",
+                "displayName": "regimen",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "tipo de afiliado",
+                "displayName": "tipo de afiliado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "municipio",
+                "displayName": "municipio",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "direccion",
+                "displayName": "direccion",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "zona",
+                "displayName": "zona",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ocupacion",
+                "displayName": "ocupacion",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nivel educativo",
+                "displayName": "nivel educativo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "estado civil",
+                "displayName": "estado civil",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "pertenencia etnica",
+                "displayName": "pertenencia etnica",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "acudiente",
+                "displayName": "acudiente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "parentesco acudiente",
+                "displayName": "parentesco acudiente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "telefono acudiente",
+                "displayName": "telefono acudiente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          896,
+          0
+        ],
+        "id": "4211d667-8fe8-4a51-8624-233fad2bbe37",
+        "name": "Generar Reporte",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Gqknaz3wzGkB42B5",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "select",
+          "table": {
+            "__rl": true,
+            "value": "Pacientes",
+            "mode": "list",
+            "cachedResultName": "Pacientes"
+          },
+          "limit": 1,
+          "where": {
+            "values": [
+              {
+                "column": "num_documento",
+                "value": "={{ $json['Documento de identidad'] }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          672,
+          0
+        ],
+        "id": "94fd7630-cc70-47f5-958e-aa22affeae74",
+        "name": "Consultar Paciente",
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Buscar Datos Cargados",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Datos Cargados": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "Consultar Paciente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consultar Paciente": {
+        "main": [
+          [
+            {
+              "node": "Generar Reporte",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version 9407fe6d",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "9407fe6d-d65e-432b-bcca-a9993a432115",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Buscar Datos Cargados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Datos Cargados": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Consultar Paciente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Paciente": {
+      "main": [
+        [
+          {
+            "node": "Generar Reporte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T14:23:55.630Z",
+  "id": "yXOyOWMIiQoTMj1d",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Validar Datos Cargados",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "f2a2de5b-b1b2-49a8-966e-2a6ed5f22c29",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b321e04e-a069-4009-81c8-06a8490dd3e0",
+      "name": "Webhook",
+      "webhookId": "f2a2de5b-b1b2-49a8-966e-2a6ed5f22c29"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"datos_cargados\": {{ $json.row_number ? true : false }},\n  \"datos_requeridos\": {{ $json.row_number ? false : true }}\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "e77d8ec1-7e20-475b-985a-22a75e23fa1d",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI",
+          "mode": "list",
+          "cachedResultName": "DATOS PACIENTES - CHATBOT - ANDES DEL SUR IPS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 96979820,
+          "mode": "list",
+          "cachedResultName": "Pacientes Chatbot",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/100KO9IsRzBwTtCVsPwhuP36QZs48g19wDbDG2SXlPgI/edit#gid=96979820"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Documento de identidad",
+              "lookupValue": "={{ $json.body.doc }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "0a294c70-ee17-42c9-b977-b071d8287f82",
+      "name": "Buscar Datos Cargados",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gqknaz3wzGkB42B5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc",
+          "mode": "list",
+          "cachedResultName": "DATOS CHATBOT - ANDES DEL SUR IPS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 752320222,
+          "mode": "list",
+          "cachedResultName": "Pacientes Nuevos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit#gid=752320222"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "tipo_doc": "={{ $json.tipo_doc }}",
+            "nombre1": "={{ $json.nombre1 }}",
+            "nombre2": "={{ $json.nombre2 }}",
+            "num_documento": "={{ $json.num_documento }}",
+            "apellido1": "={{ $json.apellido1 }}",
+            "apellido2": "={{ $json.apellido2 }}",
+            "telefono": "={{ $json.telefono }}",
+            "correo": "={{ $json.correo }}",
+            "sexo": "={{ $json.sexo }}",
+            "fecha_nacimiento": "={{ $json.fecha_nacimiento }}",
+            "eps": "={{ $json.eps }}",
+            "telefono acudiente": "={{ $('Buscar Datos Cargados').item.json['Teléfono acudiente'] }}",
+            "parentesco acudiente": "={{ $('Buscar Datos Cargados').item.json['Parentesco acudiente'] }}",
+            "acudiente": "={{ $('Buscar Datos Cargados').item.json.Acudiente }}",
+            "pertenencia etnica": "={{ $('Buscar Datos Cargados').item.json['Pertenencia Étnica'] }}",
+            "estado civil": "={{ $('Buscar Datos Cargados').item.json['Estado Civil'] }}",
+            "nivel educativo": "={{ $('Buscar Datos Cargados').item.json['Nivel educativo'] }}",
+            "ocupacion": "={{ $('Buscar Datos Cargados').item.json['Ocupación'] }}",
+            "zona": "={{ $('Buscar Datos Cargados').item.json.Zona }}",
+            "direccion": "={{ $('Buscar Datos Cargados').item.json['Dirección'] }}",
+            "municipio": "={{ $('Buscar Datos Cargados').item.json.Municipio }}",
+            "regimen": "={{ $('Buscar Datos Cargados').item.json.Regimen }}",
+            "tipo de afiliado": "={{ $('Buscar Datos Cargados').item.json['Tipo de afiliado'] }}",
+            "lugar_nacimiento": "={{ $('Buscar Datos Cargados').item.json['Lugar de Nacimiento'] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipo_doc",
+              "displayName": "tipo_doc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "num_documento",
+              "displayName": "num_documento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre1",
+              "displayName": "nombre1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre2",
+              "displayName": "nombre2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "apellido1",
+              "displayName": "apellido1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "apellido2",
+              "displayName": "apellido2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "correo",
+              "displayName": "correo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sexo",
+              "displayName": "sexo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha_nacimiento",
+              "displayName": "fecha_nacimiento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lugar_nacimiento",
+              "displayName": "lugar_nacimiento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "eps",
+              "displayName": "eps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "regimen",
+              "displayName": "regimen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipo de afiliado",
+              "displayName": "tipo de afiliado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "municipio",
+              "displayName": "municipio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "direccion",
+              "displayName": "direccion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "zona",
+              "displayName": "zona",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ocupacion",
+              "displayName": "ocupacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nivel educativo",
+              "displayName": "nivel educativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "estado civil",
+              "displayName": "estado civil",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pertenencia etnica",
+              "displayName": "pertenencia etnica",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "acudiente",
+              "displayName": "acudiente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "parentesco acudiente",
+              "displayName": "parentesco acudiente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "telefono acudiente",
+              "displayName": "telefono acudiente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        0
+      ],
+      "id": "4211d667-8fe8-4a51-8624-233fad2bbe37",
+      "name": "Generar Reporte",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gqknaz3wzGkB42B5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "Pacientes",
+          "mode": "list",
+          "cachedResultName": "Pacientes"
+        },
+        "limit": 1,
+        "where": {
+          "values": [
+            {
+              "column": "num_documento",
+              "value": "={{ $json['Documento de identidad'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        0
+      ],
+      "id": "94fd7630-cc70-47f5-958e-aa22affeae74",
+      "name": "Consultar Paciente",
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T14:23:55.633Z",
+      "createdAt": "2026-03-15T14:23:55.633Z",
+      "role": "workflow:owner",
+      "workflowId": "yXOyOWMIiQoTMj1d",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-16T18:44:00.311Z",
+  "versionId": "9407fe6d-d65e-432b-bcca-a9993a432115"
+}
