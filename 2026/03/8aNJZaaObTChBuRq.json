@@ -1,0 +1,387 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-17T20:38:53.000Z",
+    "createdAt": "2026-03-17T20:38:29.062Z",
+    "versionId": "83ca7ac6-f3ce-4ac7-bbba-a5a817c6fc51",
+    "workflowId": "8aNJZaaObTChBuRq",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "b5bf2dd9-d5a0-4a42-b38c-8230826d9215",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          64
+        ],
+        "id": "9e0c8c16-8810-46da-a0ec-6206d4d2915b",
+        "name": "Webhook",
+        "webhookId": "b5bf2dd9-d5a0-4a42-b38c-8230826d9215"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"paciente\": \"{{ $('Formato Datos').item.json.paciente }}\",\n\"edad\": {{ $('Formato Datos').item.json.edad }},\n\"doc\": \"{{ $('Formato Datos').item.json.num_documento }}\",\n\"telefono\": \"{{ $('Formato Datos').item.json.telefono }}\",\n\"correo\": \"{{ $('Formato Datos').item.json.correo }}\",\n\"eps\": \"{{ $('Formato Datos').item.json.eps }}\",\n\"datos_requeridos\": true\n} ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          672,
+          64
+        ],
+        "id": "22294cea-09e8-4b08-bfb1-8d1269322409",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $input.first().json.body;\nconst {\n  nombre_1,\n  nombre_2,\n  apellido_1,\n  apellido_2,\n  sexo,\n  fecha_nacimiento,\n  tipo_doc,\n  doc,\n  telefono,\n  correo,\n  eps\n} = data;\n\nfunction calcularEdad(fecha) {\n  const fechaActual = new Date();\n  const fechaNacimiento = new Date(fecha);\n\n  let años = fechaActual.getFullYear() - fechaNacimiento.getFullYear();\n  const mes = fechaActual.getMonth() - fechaNacimiento.getMonth();\n  if (\n    mes < 0 ||\n    (mes === 0 && fechaActual.getDate() < fechaNacimiento.getDate())\n  )\n    años--;\n\n  return años;\n}\n\nconst tiposDoc = {\n  \"Tarjeta de identidad\": \"TI\",\n  \"Cedula de ciudadanía\": \"CC\",\n};\n\nconst paciente =\n  nombre_2 == \"Sin segundo nombre\"\n    ? [nombre_1, apellido_1, apellido_2]\n    : [nombre_1, nombre_2, apellido_1, apellido_2];\nconst primerNombre = String(nombre_1).toUpperCase();\nconst segundoNombre =\n  nombre_2 == \"Sin segundo nombre\" ? null : String(nombre_2).toUpperCase();\nconst primerApellido = String(apellido_1).toUpperCase();\nconst segundoApellido = String(apellido_2).toUpperCase();\nconst tipoDocSel = tiposDoc[tipo_doc];\n\nconst [fechaNacDia, fechaNacMes, fechaNacAño] = String(fecha_nacimiento).split(\"/\");\nconst fechaNacFormat = `${fechaNacAño}-${fechaNacMes}-${fechaNacDia}`\nconst edad = calcularEdad(fechaNacFormat);\n\nreturn {\n  paciente: paciente.join(\" \").toLocaleUpperCase(),\n  edad,\n  tipo_doc: tipoDocSel,\n  num_documento: doc,\n  nombre1: primerNombre,\n  nombre2: segundoNombre,\n  apellido1: primerApellido,\n  apellido2: segundoApellido,\n  telefono,\n  correo: String(correo).toLowerCase(),\n  sexo,\n  fecha_nacimiento: fechaNacFormat,\n  eps,\n  origen_chatbot: true\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          224,
+          64
+        ],
+        "id": "158b621a-95d7-4bff-83e1-0965b6082ac4",
+        "name": "Formato Datos"
+      },
+      {
+        "parameters": {
+          "table": {
+            "__rl": true,
+            "value": "Pacientes",
+            "mode": "list",
+            "cachedResultName": "Pacientes"
+          },
+          "dataMode": "defineBelow",
+          "valuesToSend": {
+            "values": [
+              {
+                "column": "tipo_doc",
+                "value": "={{ $json.tipo_doc }}"
+              },
+              {
+                "column": "num_documento",
+                "value": "={{ $json.num_documento }}"
+              },
+              {
+                "column": "nombre1",
+                "value": "={{ $json.nombre1 }}"
+              },
+              {
+                "column": "nombre2",
+                "value": "={{ $json.nombre2 }}"
+              },
+              {
+                "column": "apellido1",
+                "value": "={{ $json.apellido1 }}"
+              },
+              {
+                "column": "apellido2",
+                "value": "={{ $json.apellido2 }}"
+              },
+              {
+                "column": "telefono",
+                "value": "={{ $json.telefono }}"
+              },
+              {
+                "column": "correo",
+                "value": "={{ $json.correo }}"
+              },
+              {
+                "column": "sexo",
+                "value": "={{ $json.sexo }}"
+              },
+              {
+                "column": "fecha_nacimiento",
+                "value": "={{ $json.fecha_nacimiento }}"
+              },
+              {
+                "column": "eps",
+                "value": "={{ $json.eps }}"
+              },
+              {
+                "column": "origen_chatbot",
+                "value": "={{ $json.origen_chatbot }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          448,
+          64
+        ],
+        "id": "6e5bd26d-b9f1-43ca-857a-95e01e46d916",
+        "name": "Registro Paciente",
+        "alwaysOutputData": true,
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Formato Datos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formato Datos": {
+        "main": [
+          [
+            {
+              "node": "Registro Paciente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Registro Paciente": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version 83ca7ac6",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "83ca7ac6-f3ce-4ac7-bbba-a5a817c6fc51",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Formato Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formato Datos": {
+      "main": [
+        [
+          {
+            "node": "Registro Paciente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registro Paciente": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T07:55:34.791Z",
+  "id": "8aNJZaaObTChBuRq",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Crear Paciente",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b5bf2dd9-d5a0-4a42-b38c-8230826d9215",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        64
+      ],
+      "id": "9e0c8c16-8810-46da-a0ec-6206d4d2915b",
+      "name": "Webhook",
+      "webhookId": "b5bf2dd9-d5a0-4a42-b38c-8230826d9215"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"paciente\": \"{{ $('Formato Datos').item.json.paciente }}\",\n\"edad\": {{ $('Formato Datos').item.json.edad }},\n\"doc\": \"{{ $('Formato Datos').item.json.num_documento }}\",\n\"telefono\": \"{{ $('Formato Datos').item.json.telefono }}\",\n\"correo\": \"{{ $('Formato Datos').item.json.correo }}\",\n\"eps\": \"{{ $('Formato Datos').item.json.eps }}\",\n\"datos_requeridos\": true\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        64
+      ],
+      "id": "22294cea-09e8-4b08-bfb1-8d1269322409",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json.body;\nconst {\n  nombre_1,\n  nombre_2,\n  apellido_1,\n  apellido_2,\n  sexo,\n  fecha_nacimiento,\n  tipo_doc,\n  doc,\n  telefono,\n  correo,\n  eps\n} = data;\n\nfunction calcularEdad(fecha) {\n  const fechaActual = new Date();\n  const fechaNacimiento = new Date(fecha);\n\n  let años = fechaActual.getFullYear() - fechaNacimiento.getFullYear();\n  const mes = fechaActual.getMonth() - fechaNacimiento.getMonth();\n  if (\n    mes < 0 ||\n    (mes === 0 && fechaActual.getDate() < fechaNacimiento.getDate())\n  )\n    años--;\n\n  return años;\n}\n\nconst tiposDoc = {\n  \"Tarjeta de identidad\": \"TI\",\n  \"Cedula de ciudadanía\": \"CC\",\n};\n\nconst paciente =\n  nombre_2 == \"Sin segundo nombre\"\n    ? [nombre_1, apellido_1, apellido_2]\n    : [nombre_1, nombre_2, apellido_1, apellido_2];\nconst primerNombre = String(nombre_1).toUpperCase();\nconst segundoNombre =\n  nombre_2 == \"Sin segundo nombre\" ? null : String(nombre_2).toUpperCase();\nconst primerApellido = String(apellido_1).toUpperCase();\nconst segundoApellido = String(apellido_2).toUpperCase();\nconst tipoDocSel = tiposDoc[tipo_doc];\n\nconst [fechaNacDia, fechaNacMes, fechaNacAño] = String(fecha_nacimiento).split(\"/\");\nconst fechaNacFormat = `${fechaNacAño}-${fechaNacMes}-${fechaNacDia}`\nconst edad = calcularEdad(fechaNacFormat);\n\nreturn {\n  paciente: paciente.join(\" \").toLocaleUpperCase(),\n  edad,\n  tipo_doc: tipoDocSel,\n  num_documento: doc,\n  nombre1: primerNombre,\n  nombre2: segundoNombre,\n  apellido1: primerApellido,\n  apellido2: segundoApellido,\n  telefono,\n  correo: String(correo).toLowerCase(),\n  sexo,\n  fecha_nacimiento: fechaNacFormat,\n  eps,\n  origen_chatbot: true\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        64
+      ],
+      "id": "158b621a-95d7-4bff-83e1-0965b6082ac4",
+      "name": "Formato Datos"
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "Pacientes",
+          "mode": "list",
+          "cachedResultName": "Pacientes"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "tipo_doc",
+              "value": "={{ $json.tipo_doc }}"
+            },
+            {
+              "column": "num_documento",
+              "value": "={{ $json.num_documento }}"
+            },
+            {
+              "column": "nombre1",
+              "value": "={{ $json.nombre1 }}"
+            },
+            {
+              "column": "nombre2",
+              "value": "={{ $json.nombre2 }}"
+            },
+            {
+              "column": "apellido1",
+              "value": "={{ $json.apellido1 }}"
+            },
+            {
+              "column": "apellido2",
+              "value": "={{ $json.apellido2 }}"
+            },
+            {
+              "column": "telefono",
+              "value": "={{ $json.telefono }}"
+            },
+            {
+              "column": "correo",
+              "value": "={{ $json.correo }}"
+            },
+            {
+              "column": "sexo",
+              "value": "={{ $json.sexo }}"
+            },
+            {
+              "column": "fecha_nacimiento",
+              "value": "={{ $json.fecha_nacimiento }}"
+            },
+            {
+              "column": "eps",
+              "value": "={{ $json.eps }}"
+            },
+            {
+              "column": "origen_chatbot",
+              "value": "={{ $json.origen_chatbot }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        448,
+        64
+      ],
+      "id": "6e5bd26d-b9f1-43ca-857a-95e01e46d916",
+      "name": "Registro Paciente",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T07:55:34.796Z",
+      "createdAt": "2026-03-15T07:55:34.796Z",
+      "role": "workflow:owner",
+      "workflowId": "8aNJZaaObTChBuRq",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-17T20:38:29.061Z",
+  "versionId": "83ca7ac6-f3ce-4ac7-bbba-a5a817c6fc51"
+}
