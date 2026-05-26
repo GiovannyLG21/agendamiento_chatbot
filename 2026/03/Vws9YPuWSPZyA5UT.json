@@ -1,0 +1,607 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-04-11T20:52:21.000Z",
+    "createdAt": "2026-04-11T20:52:07.302Z",
+    "versionId": "83848eab-4302-4e44-a631-6e624ce5e3a9",
+    "workflowId": "Vws9YPuWSPZyA5UT",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 8
+              },
+              {
+                "triggerAtHour": 20
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -320,
+          0
+        ],
+        "id": "897e1708-ed89-474b-9fee-b6f303d6d1ab",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "jsCode": "const citas = $input.all();\n\nconst fechaString = (fecha) =>\n  DateTime.fromFormat(fecha, \"yyyy-MM-dd HH:mm:ss\");\nconst fechaDiff = (fechaSup, fechaInf) =>\n  parseInt(fechaSup.diff(fechaInf, \"hours\").hours.toFixed(2));\n\nconst recordPendientes = citas.reduce((acc, cita) => {\n  const fecha_consulta = cita.json.fecha_consulta;\n  const hora_consulta = cita.json.hora_consulta;\n  const fecha_agendada = cita.json.fecha_agendada;\n  const recordatorios = cita.json.recordatorios;\n\n  const fechaActual = DateTime.now();\n  const fechaCita = fechaString(`${fecha_consulta} ${hora_consulta}`);\n  const fechaAgendada = fechaString(fecha_agendada);\n  const horasRestantes = fechaDiff(fechaCita, fechaActual);\n  const diffFechaAgendada = fechaDiff(fechaCita, fechaAgendada);\n  const tipoRecordatorio =\n    horasRestantes >= 18 && horasRestantes <= 30 ? \"24h\" : \"48h\";\n\n  cita.json.consulta = cita.json.consulta\n    .toLowerCase()\n    .split(\" \")\n    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))\n    .join(\" \");\n  cita.json.tipo_recordatorio = tipoRecordatorio;\n  cita.json.horas_restantes = horasRestantes;\n  cita.json.diffFechaAgendada = diffFechaAgendada;\n  cita.json.fecha_consulta = DateTime.fromFormat(fecha_consulta, \"yyyy-MM-dd\")\n    .setLocale(\"es-CO\")\n    .toLocaleString({\n      day: \"numeric\",\n      month: \"long\",\n      year: \"numeric\",\n    });\n  cita.json.hora_consulta = DateTime.fromFormat(hora_consulta, \"HH:mm:ss\")\n    .setLocale(\"es-CO\")\n    .toLocaleString({\n      hour: \"numeric\",\n      minute: \"numeric\",\n      hour12: true,\n    });\n\n  if (!recordatorios || !recordatorios.includes(tipoRecordatorio))\n    acc.push(cita.json);\n  return acc;\n}, []);\n\nreturn {\n  recordPendientes,\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          352,
+          -96
+        ],
+        "id": "f6d6c95b-5a34-4470-ad77-c729a824e8e5",
+        "name": "Definir Recordatorios"
+      },
+      {
+        "parameters": {
+          "fromEmail": "=Innovasoft SAS<noreply@innovasoftsas.com>",
+          "toEmail": "={{ $json.correo }}",
+          "subject": "=[RECORDATORIO] Su cita para {{ $json.consulta }} en Horisoes IPS se encuentra confirmada!",
+          "html": "=<article\n        style=\"font-family: 'Roboto', Arial, sans-serif; color: #707070; border: 1px solid lightgray; border-radius: 20px; width: 650px; margin: 0 auto;\">\n        <header\n            style=\"background-color: rgba(30, 144, 255, 0.10); padding: 20px 10px; border-top-left-radius: 20px; border-top-right-radius: 20px;\">\n<div style=\"width: fit-content; margin: 0px auto;\">\n\n<h1 style=\"font-size: 18px; text-align: center\">Recordatorio de Cita</h1>\n</div>\n        </header>\n        <section style=\"background-color: white; padding: 15px 45px 25px\">\n            <p style=\"font-size: 15px;\">\n                Estimad@ <strong style=\"color: dodgerblue\">{{ $json.paciente }}</strong>, te recordamos que tienes una nueva cita.\n            </p>\n            <br />\n            <h2 style=\"font-size: 16px; margin-bottom: 25px; color: dodgerblue; font-weight: bolder;\">\n                Datos de la cita\n            </h2>\n            <div style=\"font-size: 14px;\">\n                <p>\n                    <strong style=\"color: dodgerblue\">Médico:</strong> {{ $json.medico }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Especialidad:</strong> {{ $json.consulta.toUpperCase() }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Sede:</strong> Horisoes IPS\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Dirección:</strong> Cl. 15 Nte. #7n 67\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Fecha:</strong> {{ $json.fecha_consulta }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Hora:</strong> {{ $json.hora_consulta }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Código de cita:</strong> {{ $json.id }}\n                </p>\n            </div>\n            <div style=\"margin-top: 40px\">\n                <a href=\"https://wa.link/f7f2nk\" target=\"_blank\"\n                    style=\"background-color: dodgerblue; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; \">\n                    Cancelar Cita\n                </a>\n            </div>\n            <div style=\"background-color:lightgray; width: 80%; height: 1px; margin-top: 50px;\"></div>\n            <h4 style=\"font-weight: bolder; color: dodgerblue;\">¡IMPORTANTE!</h4>\n            <p style=\"line-height: 2;\">Asistir con su documento de identidad y/o carné. Preséntese con 20 minutos de\n                anticipación. En caso que\n                no pueda asistir a la cita, por favor cancelarla en nuestros canales virtuales, como respuesta a la\n                notificación que llegará a su correo o en nuestra\n                línea de citas. Llevar su cuota moderadora. A la cita debe asistir el paciente. Si la cita es para un\n                menor de edad, el mismo debe asistir acompañado de un adulto. Si su cita requiere orden medica, tenga en\n                cuenta su vigencia y presentarla al momento del anuncio de su cita. Recuerde presentar en físico los\n                resultados de laboratorios, radiología, ecografía u otros.</p>\n        </section>\n    </article>",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.emailSend",
+        "typeVersion": 2.1,
+        "position": [
+          800,
+          -96
+        ],
+        "id": "74903083-da03-424d-8368-9f3087d569b0",
+        "name": "Enviar Recordatorios",
+        "webhookId": "797dd88b-e6ee-4ca7-b6d3-80c095171b43",
+        "credentials": {
+          "smtp": {
+            "id": "FVf6SGzz7Mnu6r38",
+            "name": "Hostinger Email"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## Schedule Trigger\nEjecutar Workflow cada **12 horas** (8 am y 8 pm).",
+          "height": 112,
+          "width": 230,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          208,
+          -304
+        ],
+        "typeVersion": 1,
+        "id": "984a84ca-2dac-4fe4-a2bc-103e15a920f6",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "recordPendientes",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          576,
+          -96
+        ],
+        "id": "45fb64a3-1b13-4a4c-9916-10c3fe455030",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SET @NOW = '{{ $now.format('yyyy-MM-dd HH:mm:ss') }}';\nSELECT Ag.id, Ag.paciente, Ag.doc_paciente, Pa.correo, Ag.medico, Con.consulta, Ag.fecha_consulta, Ag.hora_consulta, Ag.fecha_agendada, GROUP_CONCAT(Rec.tipo) AS 'recordatorios' FROM Agenda Ag\nJOIN Medicos Med ON Ag.medico = Med.medico\nJOIN Consultas Con ON Med.especialidad = Con.id\nJOIN Pacientes Pa ON Ag.doc_paciente = Pa.num_documento\nLEFT JOIN Recordatorios Rec ON Rec.agenda_id = Ag.id\n  \nWHERE (TIMESTAMP(Ag.fecha_consulta, Ag.hora_consulta) BETWEEN @NOW + INTERVAL 18 HOUR AND @NOW + INTERVAL 30 HOUR\nAND fecha_agendada <= TIMESTAMP(Ag.fecha_consulta, Ag.hora_consulta) - INTERVAL 26 HOUR) \nAND Ag.estado = 2\n\nOR (TIMESTAMP(Ag.fecha_consulta, Ag.hora_consulta) BETWEEN @NOW + INTERVAL 42 HOUR AND @NOW + INTERVAL 54 HOUR\nAND fecha_agendada <= TIMESTAMP(Ag.fecha_consulta, Ag.hora_consulta) - INTERVAL 50 HOUR)\nAND Ag.estado = 2\n\nGROUP BY Ag.id",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          -96,
+          0
+        ],
+        "id": "3bb4000d-e46e-4760-91c0-f41fb5d11703",
+        "name": "Consultar Citas Proximas",
+        "alwaysOutputData": false,
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "table": {
+            "__rl": true,
+            "value": "Recordatorios",
+            "mode": "list",
+            "cachedResultName": "Recordatorios"
+          },
+          "dataMode": "defineBelow",
+          "valuesToSend": {
+            "values": [
+              {
+                "column": "agenda_id",
+                "value": "={{ $('Split Out').item.json.id }}"
+              },
+              {
+                "column": "tipo",
+                "value": "={{ $('Split Out').item.json.tipo_recordatorio }}"
+              },
+              {
+                "column": "fecha_envio",
+                "value": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          1024,
+          -96
+        ],
+        "id": "5813f4c3-8a3f-43c5-adaa-cc5f7f868bff",
+        "name": "Registrar Recordatorios",
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "c0c9368e-d732-4634-a782-b53f386fa412",
+                "leftValue": "={{ $input.first().json.id }}",
+                "rightValue": false,
+                "operator": {
+                  "type": "number",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          128,
+          0
+        ],
+        "id": "d290d2d5-9466-47ac-85c8-a9df32291e50",
+        "name": "If"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          352,
+          96
+        ],
+        "id": "2529f475-f4b3-4162-a23f-e38e0ee92e66",
+        "name": "No Operation, do nothing"
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Consultar Citas Proximas",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Definir Recordatorios": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Enviar Recordatorios",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consultar Citas Proximas": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar Recordatorios": {
+        "main": [
+          [
+            {
+              "node": "Registrar Recordatorios",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Definir Recordatorios",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version 83848eab",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "83848eab-4302-4e44-a631-6e624ce5e3a9",
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Consultar Citas Proximas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Definir Recordatorios": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Enviar Recordatorios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Citas Proximas": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Recordatorios": {
+      "main": [
+        [
+          {
+            "node": "Registrar Recordatorios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Definir Recordatorios",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-17T20:42:39.786Z",
+  "id": "Vws9YPuWSPZyA5UT",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Recordatorios Citas",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            },
+            {
+              "triggerAtHour": 20
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "897e1708-ed89-474b-9fee-b6f303d6d1ab",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const citas = $input.all();\n\nconst fechaString = (fecha) =>\n  DateTime.fromFormat(fecha, \"yyyy-MM-dd HH:mm:ss\");\nconst fechaDiff = (fechaSup, fechaInf) =>\n  parseInt(fechaSup.diff(fechaInf, \"hours\").hours.toFixed(2));\n\nconst recordPendientes = citas.reduce((acc, cita) => {\n  const fecha_consulta = cita.json.fecha_consulta;\n  const hora_consulta = cita.json.hora_consulta;\n  const fecha_agendada = cita.json.fecha_agendada;\n  const recordatorios = cita.json.recordatorios;\n\n  const fechaActual = DateTime.now();\n  const fechaCita = fechaString(`${fecha_consulta} ${hora_consulta}`);\n  const fechaAgendada = fechaString(fecha_agendada);\n  const horasRestantes = fechaDiff(fechaCita, fechaActual);\n  const diffFechaAgendada = fechaDiff(fechaCita, fechaAgendada);\n  const tipoRecordatorio =\n    horasRestantes >= 18 && horasRestantes <= 30 ? \"24h\" : \"48h\";\n\n  cita.json.consulta = cita.json.consulta\n    .toLowerCase()\n    .split(\" \")\n    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))\n    .join(\" \");\n  cita.json.tipo_recordatorio = tipoRecordatorio;\n  cita.json.horas_restantes = horasRestantes;\n  cita.json.diffFechaAgendada = diffFechaAgendada;\n  cita.json.fecha_consulta = DateTime.fromFormat(fecha_consulta, \"yyyy-MM-dd\")\n    .setLocale(\"es-CO\")\n    .toLocaleString({\n      day: \"numeric\",\n      month: \"long\",\n      year: \"numeric\",\n    });\n  cita.json.hora_consulta = DateTime.fromFormat(hora_consulta, \"HH:mm:ss\")\n    .setLocale(\"es-CO\")\n    .toLocaleString({\n      hour: \"numeric\",\n      minute: \"numeric\",\n      hour12: true,\n    });\n\n  if (!recordatorios || !recordatorios.includes(tipoRecordatorio))\n    acc.push(cita.json);\n  return acc;\n}, []);\n\nreturn {\n  recordPendientes,\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        -96
+      ],
+      "id": "f6d6c95b-5a34-4470-ad77-c729a824e8e5",
+      "name": "Definir Recordatorios"
+    },
+    {
+      "parameters": {
+        "fromEmail": "=Innovasoft SAS<noreply@innovasoftsas.com>",
+        "toEmail": "={{ $json.correo }}",
+        "subject": "=[RECORDATORIO] Su cita para {{ $json.consulta }} en Horisoes IPS se encuentra confirmada!",
+        "html": "=<article\n        style=\"font-family: 'Roboto', Arial, sans-serif; color: #707070; border: 1px solid lightgray; border-radius: 20px; width: 650px; margin: 0 auto;\">\n        <header\n            style=\"background-color: rgba(30, 144, 255, 0.10); padding: 20px 10px; border-top-left-radius: 20px; border-top-right-radius: 20px;\">\n<div style=\"width: fit-content; margin: 0px auto;\">\n\n<h1 style=\"font-size: 18px; text-align: center\">Recordatorio de Cita</h1>\n</div>\n        </header>\n        <section style=\"background-color: white; padding: 15px 45px 25px\">\n            <p style=\"font-size: 15px;\">\n                Estimad@ <strong style=\"color: dodgerblue\">{{ $json.paciente }}</strong>, te recordamos que tienes una nueva cita.\n            </p>\n            <br />\n            <h2 style=\"font-size: 16px; margin-bottom: 25px; color: dodgerblue; font-weight: bolder;\">\n                Datos de la cita\n            </h2>\n            <div style=\"font-size: 14px;\">\n                <p>\n                    <strong style=\"color: dodgerblue\">Médico:</strong> {{ $json.medico }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Especialidad:</strong> {{ $json.consulta.toUpperCase() }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Sede:</strong> Horisoes IPS\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Dirección:</strong> Cl. 15 Nte. #7n 67\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Fecha:</strong> {{ $json.fecha_consulta }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Hora:</strong> {{ $json.hora_consulta }}\n                </p>\n                <p>\n                    <strong style=\"color: dodgerblue\">Código de cita:</strong> {{ $json.id }}\n                </p>\n            </div>\n            <div style=\"margin-top: 40px\">\n                <a href=\"https://wa.link/f7f2nk\" target=\"_blank\"\n                    style=\"background-color: dodgerblue; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; \">\n                    Cancelar Cita\n                </a>\n            </div>\n            <div style=\"background-color:lightgray; width: 80%; height: 1px; margin-top: 50px;\"></div>\n            <h4 style=\"font-weight: bolder; color: dodgerblue;\">¡IMPORTANTE!</h4>\n            <p style=\"line-height: 2;\">Asistir con su documento de identidad y/o carné. Preséntese con 20 minutos de\n                anticipación. En caso que\n                no pueda asistir a la cita, por favor cancelarla en nuestros canales virtuales, como respuesta a la\n                notificación que llegará a su correo o en nuestra\n                línea de citas. Llevar su cuota moderadora. A la cita debe asistir el paciente. Si la cita es para un\n                menor de edad, el mismo debe asistir acompañado de un adulto. Si su cita requiere orden medica, tenga en\n                cuenta su vigencia y presentarla al momento del anuncio de su cita. Recuerde presentar en físico los\n                resultados de laboratorios, radiología, ecografía u otros.</p>\n        </section>\n    </article>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        -96
+      ],
+      "id": "74903083-da03-424d-8368-9f3087d569b0",
+      "name": "Enviar Recordatorios",
+      "webhookId": "797dd88b-e6ee-4ca7-b6d3-80c095171b43",
+      "credentials": {
+        "smtp": {
+          "id": "FVf6SGzz7Mnu6r38",
+          "name": "Hostinger Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Schedule Trigger\nEjecutar Workflow cada **12 horas** (8 am y 8 pm).",
+        "height": 112,
+        "width": 230,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        208,
+        -304
+      ],
+      "typeVersion": 1,
+      "id": "984a84ca-2dac-4fe4-a2bc-103e15a920f6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "recordPendientes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        576,
+        -96
+      ],
+      "id": "45fb64a3-1b13-4a4c-9916-10c3fe455030",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SET @NOW = '{{ $now.format('yyyy-MM-dd HH:mm:ss') }}';\nSELECT Ag.id, Ag.paciente, Ag.doc_paciente, Pa.correo, Ag.medico, Con.consulta, Ag.fecha_consulta, Ag.hora_consulta, Ag.fecha_agendada, GROUP_CONCAT(Rec.tipo) AS 'recordatorios' FROM Agenda Ag\nJOIN Medicos Med ON Ag.medico = Med.medico\nJOIN Consultas Con ON Med.especialidad = Con.id\nJOIN Pacientes Pa ON Ag.doc_paciente = Pa.num_documento\nLEFT JOIN Recordatorios Rec ON Rec.agenda_id = Ag.id\n  \nWHERE (TIMESTAMP(Ag.fecha_consulta, Ag.hora_consulta) BETWEEN @NOW + INTERVAL 18 HOUR AND @NOW + INTERVAL 30 HOUR\nAND fecha_agendada <= TIMESTAMP(Ag.fecha_consulta, Ag.hora_consulta) - INTERVAL 26 HOUR) \nAND Ag.estado = 2\n\nOR (TIMESTAMP(Ag.fecha_consulta, Ag.hora_consulta) BETWEEN @NOW + INTERVAL 42 HOUR AND @NOW + INTERVAL 54 HOUR\nAND fecha_agendada <= TIMESTAMP(Ag.fecha_consulta, Ag.hora_consulta) - INTERVAL 50 HOUR)\nAND Ag.estado = 2\n\nGROUP BY Ag.id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "3bb4000d-e46e-4760-91c0-f41fb5d11703",
+      "name": "Consultar Citas Proximas",
+      "alwaysOutputData": false,
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "Recordatorios",
+          "mode": "list",
+          "cachedResultName": "Recordatorios"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "agenda_id",
+              "value": "={{ $('Split Out').item.json.id }}"
+            },
+            {
+              "column": "tipo",
+              "value": "={{ $('Split Out').item.json.tipo_recordatorio }}"
+            },
+            {
+              "column": "fecha_envio",
+              "value": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        1024,
+        -96
+      ],
+      "id": "5813f4c3-8a3f-43c5-adaa-cc5f7f868bff",
+      "name": "Registrar Recordatorios",
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c0c9368e-d732-4634-a782-b53f386fa412",
+              "leftValue": "={{ $input.first().json.id }}",
+              "rightValue": false,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        128,
+        0
+      ],
+      "id": "d290d2d5-9466-47ac-85c8-a9df32291e50",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        352,
+        96
+      ],
+      "id": "2529f475-f4b3-4162-a23f-e38e0ee92e66",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-17T20:42:39.790Z",
+      "createdAt": "2026-03-17T20:42:39.790Z",
+      "role": "workflow:owner",
+      "workflowId": "Vws9YPuWSPZyA5UT",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-11T20:52:07.301Z",
+  "versionId": "83848eab-4302-4e44-a631-6e624ce5e3a9"
+}
