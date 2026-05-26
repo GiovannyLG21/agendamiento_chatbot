@@ -1,0 +1,657 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-16T13:28:39.000Z",
+    "createdAt": "2026-03-16T13:28:12.458Z",
+    "versionId": "36df57ae-64b6-4c55-bc39-89d07a30c8ee",
+    "workflowId": "9g1pkGMjH1IkrVjT",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "c51f7645-a833-4099-a1b5-f03bb66763ec",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "a1c0d253-0783-4560-b2e8-782252429395",
+        "name": "Webhook",
+        "webhookId": "c51f7645-a833-4099-a1b5-f03bb66763ec"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT `id`, `medico` AS 'nombre'\nFROM u125634063_ins_andes.Medicos",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          224,
+          0
+        ],
+        "id": "36c12d69-c3aa-4ddc-bc46-55f32d79fadf",
+        "name": "Consulta Medicos",
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const medicos = $input.all()\nconst medico_sel = $('Webhook').first().json.body.medico\n\nlet medicoSel = medico_sel.replace(medico_sel.includes('Dr. ') ? 'Dr. ' : 'Dra. ', '')\nif (medicoSel == \"JUAN P. VALENCIA\") medicoSel = \"JUAN PABLO VALENCIA\"\nconst medicoValido = medicos.find(medico => medico.json.nombre == medicoSel)\n\nreturn {\n    code_med: medicoValido ? medicoValido.json.id : \"null\"\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          0
+        ],
+        "id": "3a75dd33-ca0a-4525-9f32-571ea03a6a1c",
+        "name": "Encontrar Medico"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "7b887565-3aee-4f83-bac1-9c2b3cc9e103",
+                "leftValue": "={{ $json.code_med }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          672,
+          0
+        ],
+        "id": "f1407347-b28d-4f58-9680-1e3a8782b518",
+        "name": "Medico Encontrado"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"code_med\": \"null\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          896,
+          96
+        ],
+        "id": "3472fded-c7bc-4361-8713-5ec02c81ddbb",
+        "name": "Medico No Encontrado"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"agenda\": \"null\",\n  \"code_med\": {{ $('Medico Encontrado').item.json.code_med }}\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1344,
+          0
+        ],
+        "id": "81f9ed91-2041-449f-b5d0-b80761cfc802",
+        "name": "Agenda No Encontrada"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "23d4d0dc-c16d-4771-a529-bfecd3263544",
+                "leftValue": "={{ $json.id }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1120,
+          -96
+        ],
+        "id": "03cdf65f-29a6-4985-9d1d-29f22a6bede8",
+        "name": "Agenda Encontrada"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1568,
+          -192
+        ],
+        "id": "b88e5358-9499-4b04-91c7-4e475534de4e",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT ROW_NUMBER() OVER (ORDER BY fecha_consulta) AS id,\nDAY(`fecha_consulta`) as 'dia', \nMONTH(`fecha_consulta`) as 'mes',\nYEAR(`fecha_consulta`) as 'año'\nFROM u125634063_ins_andes.Agenda\nWHERE Id_med = $1\nAND fecha_consulta >= (CURDATE() + INTERVAL 1 DAY)\nAND estado = 1\nGROUP BY fecha_consulta\nLIMIT 7",
+          "options": {
+            "queryReplacement": "={{ String($json.code_med) }}"
+          }
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          896,
+          -96
+        ],
+        "id": "f615e75c-a0bf-42b0-aa16-04cb50888a1a",
+        "name": "Consultar Agenda",
+        "alwaysOutputData": true,
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const agendaDatos = $input.all()\nconst code_med = $('Medico Encontrado').first().json.code_med\n\nfunction obtenerNombreMes(numMes){\n    const fecha = new Date()\n    fecha.setMonth(numMes - 1)\n    return fecha.toLocaleDateString('es-CO', { month: 'long'})\n}\n\nconst agenda = agendaDatos.map(agenda => ({ ...agenda.json, mes_nombre: obtenerNombreMes(agenda.json.mes)}))\n\nconst text = agenda.map(({id, dia, mes_nombre}) => `${id}. ${dia} de ${mes_nombre}`).join('\\n')\n\nreturn {\n  agenda,\n  text,\n  code_med\n}\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1344,
+          -192
+        ],
+        "id": "d6d3581c-bba9-4d46-890d-20057eb6d678",
+        "name": "Formato Datos"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Consulta Medicos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consulta Medicos": {
+        "main": [
+          [
+            {
+              "node": "Encontrar Medico",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Encontrar Medico": {
+        "main": [
+          [
+            {
+              "node": "Medico Encontrado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Medico Encontrado": {
+        "main": [
+          [
+            {
+              "node": "Consultar Agenda",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Medico No Encontrado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agenda Encontrada": {
+        "main": [
+          [
+            {
+              "node": "Formato Datos",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Agenda No Encontrada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consultar Agenda": {
+        "main": [
+          [
+            {
+              "node": "Agenda Encontrada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Formato Datos": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version 36df57ae",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "36df57ae-64b6-4c55-bc39-89d07a30c8ee",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Consulta Medicos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Medicos": {
+      "main": [
+        [
+          {
+            "node": "Encontrar Medico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encontrar Medico": {
+      "main": [
+        [
+          {
+            "node": "Medico Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Medico Encontrado": {
+      "main": [
+        [
+          {
+            "node": "Consultar Agenda",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Medico No Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agenda Encontrada": {
+      "main": [
+        [
+          {
+            "node": "Formato Datos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agenda No Encontrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Agenda": {
+      "main": [
+        [
+          {
+            "node": "Agenda Encontrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formato Datos": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T10:10:50.992Z",
+  "id": "9g1pkGMjH1IkrVjT",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Consultar Agenda",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "c51f7645-a833-4099-a1b5-f03bb66763ec",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a1c0d253-0783-4560-b2e8-782252429395",
+      "name": "Webhook",
+      "webhookId": "c51f7645-a833-4099-a1b5-f03bb66763ec"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT `id`, `medico` AS 'nombre'\nFROM u125634063_ins_andes.Medicos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "36c12d69-c3aa-4ddc-bc46-55f32d79fadf",
+      "name": "Consulta Medicos",
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const medicos = $input.all()\nconst medico_sel = $('Webhook').first().json.body.medico\n\nlet medicoSel = medico_sel.replace(medico_sel.includes('Dr. ') ? 'Dr. ' : 'Dra. ', '')\nif (medicoSel == \"JUAN P. VALENCIA\") medicoSel = \"JUAN PABLO VALENCIA\"\nconst medicoValido = medicos.find(medico => medico.json.nombre == medicoSel)\n\nreturn {\n    code_med: medicoValido ? medicoValido.json.id : \"null\"\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "3a75dd33-ca0a-4525-9f32-571ea03a6a1c",
+      "name": "Encontrar Medico"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7b887565-3aee-4f83-bac1-9c2b3cc9e103",
+              "leftValue": "={{ $json.code_med }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "id": "f1407347-b28d-4f58-9680-1e3a8782b518",
+      "name": "Medico Encontrado"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"code_med\": \"null\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        96
+      ],
+      "id": "3472fded-c7bc-4361-8713-5ec02c81ddbb",
+      "name": "Medico No Encontrado"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"agenda\": \"null\",\n  \"code_med\": {{ $('Medico Encontrado').item.json.code_med }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "81f9ed91-2041-449f-b5d0-b80761cfc802",
+      "name": "Agenda No Encontrada"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "23d4d0dc-c16d-4771-a529-bfecd3263544",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1120,
+        -96
+      ],
+      "id": "03cdf65f-29a6-4985-9d1d-29f22a6bede8",
+      "name": "Agenda Encontrada"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1568,
+        -192
+      ],
+      "id": "b88e5358-9499-4b04-91c7-4e475534de4e",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT ROW_NUMBER() OVER (ORDER BY fecha_consulta) AS id,\nDAY(`fecha_consulta`) as 'dia', \nMONTH(`fecha_consulta`) as 'mes',\nYEAR(`fecha_consulta`) as 'año'\nFROM u125634063_ins_andes.Agenda\nWHERE Id_med = $1\nAND fecha_consulta >= (CURDATE() + INTERVAL 1 DAY)\nAND estado = 1\nGROUP BY fecha_consulta\nLIMIT 7",
+        "options": {
+          "queryReplacement": "={{ String($json.code_med) }}"
+        }
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        896,
+        -96
+      ],
+      "id": "f615e75c-a0bf-42b0-aa16-04cb50888a1a",
+      "name": "Consultar Agenda",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const agendaDatos = $input.all()\nconst code_med = $('Medico Encontrado').first().json.code_med\n\nfunction obtenerNombreMes(numMes){\n    const fecha = new Date()\n    fecha.setMonth(numMes - 1)\n    return fecha.toLocaleDateString('es-CO', { month: 'long'})\n}\n\nconst agenda = agendaDatos.map(agenda => ({ ...agenda.json, mes_nombre: obtenerNombreMes(agenda.json.mes)}))\n\nconst text = agenda.map(({id, dia, mes_nombre}) => `${id}. ${dia} de ${mes_nombre}`).join('\\n')\n\nreturn {\n  agenda,\n  text,\n  code_med\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        -192
+      ],
+      "id": "d6d3581c-bba9-4d46-890d-20057eb6d678",
+      "name": "Formato Datos"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T10:10:50.995Z",
+      "createdAt": "2026-03-15T10:10:50.995Z",
+      "role": "workflow:owner",
+      "workflowId": "9g1pkGMjH1IkrVjT",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-16T13:28:12.457Z",
+  "versionId": "36df57ae-64b6-4c55-bc39-89d07a30c8ee"
+}
