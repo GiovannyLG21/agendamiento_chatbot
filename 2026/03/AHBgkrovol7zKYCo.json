@@ -1,0 +1,201 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-15T14:08:44.000Z",
+    "createdAt": "2026-03-15T14:06:42.729Z",
+    "versionId": "9e38f475-d717-422b-b37a-5404673f8a68",
+    "workflowId": "AHBgkrovol7zKYCo",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "dc4027df-32b1-49a2-af9b-2b6197d7142b",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "b0d6f227-f734-41cb-b457-81a3f35ca0f3",
+        "name": "Webhook",
+        "webhookId": "dc4027df-32b1-49a2-af9b-2b6197d7142b"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          416,
+          0
+        ],
+        "id": "985159ee-442f-4ef4-bec1-ad73f7bb3ef2",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "jsCode": "const { agenda_horas, hora_sel_id } = $input.first().json.body\n\nconst horaValida = JSON.parse(agenda_horas).find(hora => hora.id == hora_sel_id)\n\nreturn {\n  agenda_code: horaValida ? horaValida.agenda_code : \"null\",\n  hora: horaValida ? horaValida.hora : \"null\"\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          208,
+          0
+        ],
+        "id": "e2d18e66-8c4f-445f-ab28-1ca5fabb8443",
+        "name": "Validar Hora Seleccionada"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Validar Hora Seleccionada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar Hora Seleccionada": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft Sas",
+    "name": "Version 9e38f475",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "9e38f475-d717-422b-b37a-5404673f8a68",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validar Hora Seleccionada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Hora Seleccionada": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T13:57:28.084Z",
+  "id": "AHBgkrovol7zKYCo",
+  "isArchived": false,
+  "meta": null,
+  "name": "Validar Hora Seleccionada",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dc4027df-32b1-49a2-af9b-2b6197d7142b",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b0d6f227-f734-41cb-b457-81a3f35ca0f3",
+      "name": "Webhook",
+      "webhookId": "dc4027df-32b1-49a2-af9b-2b6197d7142b"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        416,
+        0
+      ],
+      "id": "985159ee-442f-4ef4-bec1-ad73f7bb3ef2",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { agenda_horas, hora_sel_id } = $input.first().json.body\n\nconst horaValida = JSON.parse(agenda_horas).find(hora => hora.id == hora_sel_id)\n\nreturn {\n  agenda_code: horaValida ? horaValida.agenda_code : \"null\",\n  hora: horaValida ? horaValida.hora : \"null\"\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e2d18e66-8c4f-445f-ab28-1ca5fabb8443",
+      "name": "Validar Hora Seleccionada"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T13:57:28.088Z",
+      "createdAt": "2026-03-15T13:57:28.088Z",
+      "role": "workflow:owner",
+      "workflowId": "AHBgkrovol7zKYCo",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-15T16:07:12.097Z",
+  "versionId": "9e38f475-d717-422b-b37a-5404673f8a68"
+}
