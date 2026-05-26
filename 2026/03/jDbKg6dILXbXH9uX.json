@@ -1,0 +1,1200 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-17T20:09:41.000Z",
+    "createdAt": "2026-03-17T20:05:27.793Z",
+    "versionId": "392f43c1-c956-4f51-9c45-5a8462290fba",
+    "workflowId": "jDbKg6dILXbXH9uX",
+    "nodes": [
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "code"
+              },
+              {
+                "name": "doc"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          -144
+        ],
+        "id": "ce1ef536-ef5f-45c8-8a73-9eb5653d5ba0",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT Ag.id, Ag.id_med, Ag.fecha_creacion, Ag.doc_medico, Ag.medico, Ag.fecha_consulta, Ag.hora_consulta, Ag.doc_paciente, Ag.paciente, Ag.fecha_agendada, Ag.fecha_cancelada, Est.nombre AS estado, IF(Ag.atendida = 1, 'Atendida', 'Por atender') AS atendida\nFROM Agenda Ag\nJOIN Agenda_estados Est ON Ag.estado = Est.id\nWHERE Ag.id = $1;",
+          "options": {
+            "queryReplacement": "={{ $json.code }}"
+          }
+        },
+        "type": "n8n-nodes-base.mySql",
+        "typeVersion": 2.5,
+        "position": [
+          224,
+          -144
+        ],
+        "id": "4b51cdfd-653d-41cc-b431-7ea1a4b6ce0c",
+        "name": "Consultar Agenda",
+        "credentials": {
+          "mySql": {
+            "id": "AhIhzsui7WGvqzct",
+            "name": "MySQL Hostinger"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc",
+            "mode": "list",
+            "cachedResultName": "DATOS CHATBOT - ANDES DEL SUR IPS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Agendas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "id_med",
+                "displayName": "id_med",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha_creacion",
+                "displayName": "fecha_creacion",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "doc_medico",
+                "displayName": "doc_medico",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "medico",
+                "displayName": "medico",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha_consulta",
+                "displayName": "fecha_consulta",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "hora_consulta",
+                "displayName": "hora_consulta",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "doc_paciente",
+                "displayName": "doc_paciente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "paciente",
+                "displayName": "paciente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha_agendada",
+                "displayName": "fecha_agendada",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha_cancelada",
+                "displayName": "fecha_cancelada",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "estado",
+                "displayName": "estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "atendida",
+                "displayName": "atendida",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "orden",
+                "displayName": "orden",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          448,
+          -144
+        ],
+        "id": "850bf41d-ff73-4aa5-9ee4-c21833d532ff",
+        "name": "Insertar o Actualizar en Reporte",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Gqknaz3wzGkB42B5",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU",
+            "mode": "list",
+            "cachedResultName": "ORDENES MEDICAS - CHATBOT - ANDES DEL SUR IPS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1725535083,
+            "mode": "list",
+            "cachedResultName": "Ordenes Medicas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit#gid=1725535083"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Documento de identidad",
+                "lookupValue": "={{ $json.doc_paciente }}"
+              },
+              {
+                "lookupColumn": "Codigo cita",
+                "lookupValue": "={{ $json.id }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          896,
+          -240
+        ],
+        "id": "3d5950e4-0508-482f-845d-c67091372f36",
+        "name": "Buscar Orden",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Gqknaz3wzGkB42B5",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "b3e0fe2f-2bdc-4645-a406-aed0b57c6555",
+                "leftValue": "={{ $('When Executed by Another Workflow').item.json.doc }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          672,
+          -144
+        ],
+        "id": "899ccd04-ca70-4e95-9d41-6ab168d8e114",
+        "name": "Nueva Cita"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          896,
+          -48
+        ],
+        "id": "3a9c0314-fc60-4712-973d-94a3cb62e4cb",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc",
+            "mode": "list",
+            "cachedResultName": "DATOS CHATBOT - ANDES DEL SUR IPS",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Agendas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "id": "={{ $json['Codigo cita'] }}",
+              "orden": "={{ $json['Orden medica'] }}"
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "id_med",
+                "displayName": "id_med",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "fecha_creacion",
+                "displayName": "fecha_creacion",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "doc_medico",
+                "displayName": "doc_medico",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "medico",
+                "displayName": "medico",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "fecha_consulta",
+                "displayName": "fecha_consulta",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "hora_consulta",
+                "displayName": "hora_consulta",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "doc_paciente",
+                "displayName": "doc_paciente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "paciente",
+                "displayName": "paciente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "fecha_agendada",
+                "displayName": "fecha_agendada",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "fecha_cancelada",
+                "displayName": "fecha_cancelada",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "estado",
+                "displayName": "estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "atendida",
+                "displayName": "atendida",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "orden",
+                "displayName": "orden",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1120,
+          -240
+        ],
+        "id": "ae5dab2e-74f7-402d-91fd-eb64f5f49d50",
+        "name": "Asignar Orden",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Gqknaz3wzGkB42B5",
+            "name": "Google Sheets account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Consultar Agenda",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Consultar Agenda": {
+        "main": [
+          [
+            {
+              "node": "Insertar o Actualizar en Reporte",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insertar o Actualizar en Reporte": {
+        "main": [
+          [
+            {
+              "node": "Nueva Cita",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Orden": {
+        "main": [
+          [
+            {
+              "node": "Asignar Orden",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Nueva Cita": {
+        "main": [
+          [
+            {
+              "node": "Buscar Orden",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft SAS",
+    "name": "Version 392f43c1",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "392f43c1-c956-4f51-9c45-5a8462290fba",
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Consultar Agenda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Agenda": {
+      "main": [
+        [
+          {
+            "node": "Insertar o Actualizar en Reporte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insertar o Actualizar en Reporte": {
+      "main": [
+        [
+          {
+            "node": "Nueva Cita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Orden": {
+      "main": [
+        [
+          {
+            "node": "Asignar Orden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nueva Cita": {
+      "main": [
+        [
+          {
+            "node": "Buscar Orden",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T23:49:57.496Z",
+  "id": "jDbKg6dILXbXH9uX",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Generar Reporte",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "code"
+            },
+            {
+              "name": "doc"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -144
+      ],
+      "id": "ce1ef536-ef5f-45c8-8a73-9eb5653d5ba0",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT Ag.id, Ag.id_med, Ag.fecha_creacion, Ag.doc_medico, Ag.medico, Ag.fecha_consulta, Ag.hora_consulta, Ag.doc_paciente, Ag.paciente, Ag.fecha_agendada, Ag.fecha_cancelada, Est.nombre AS estado, IF(Ag.atendida = 1, 'Atendida', 'Por atender') AS atendida\nFROM Agenda Ag\nJOIN Agenda_estados Est ON Ag.estado = Est.id\nWHERE Ag.id = $1;",
+        "options": {
+          "queryReplacement": "={{ $json.code }}"
+        }
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        -144
+      ],
+      "id": "4b51cdfd-653d-41cc-b431-7ea1a4b6ce0c",
+      "name": "Consultar Agenda",
+      "credentials": {
+        "mySql": {
+          "id": "AhIhzsui7WGvqzct",
+          "name": "MySQL Hostinger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc",
+          "mode": "list",
+          "cachedResultName": "DATOS CHATBOT - ANDES DEL SUR IPS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Agendas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id_med",
+              "displayName": "id_med",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_creacion",
+              "displayName": "fecha_creacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc_medico",
+              "displayName": "doc_medico",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "medico",
+              "displayName": "medico",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_consulta",
+              "displayName": "fecha_consulta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hora_consulta",
+              "displayName": "hora_consulta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc_paciente",
+              "displayName": "doc_paciente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "paciente",
+              "displayName": "paciente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_agendada",
+              "displayName": "fecha_agendada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_cancelada",
+              "displayName": "fecha_cancelada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "atendida",
+              "displayName": "atendida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "orden",
+              "displayName": "orden",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        -144
+      ],
+      "id": "850bf41d-ff73-4aa5-9ee4-c21833d532ff",
+      "name": "Insertar o Actualizar en Reporte",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gqknaz3wzGkB42B5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU",
+          "mode": "list",
+          "cachedResultName": "ORDENES MEDICAS - CHATBOT - ANDES DEL SUR IPS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1725535083,
+          "mode": "list",
+          "cachedResultName": "Ordenes Medicas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hCV6hDW_8l6N7_AlnQ5gvuW1gTYKVzh_nJdc_WteUOU/edit#gid=1725535083"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Documento de identidad",
+              "lookupValue": "={{ $json.doc_paciente }}"
+            },
+            {
+              "lookupColumn": "Codigo cita",
+              "lookupValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        -240
+      ],
+      "id": "3d5950e4-0508-482f-845d-c67091372f36",
+      "name": "Buscar Orden",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gqknaz3wzGkB42B5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b3e0fe2f-2bdc-4645-a406-aed0b57c6555",
+              "leftValue": "={{ $('When Executed by Another Workflow').item.json.doc }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        -144
+      ],
+      "id": "899ccd04-ca70-4e95-9d41-6ab168d8e114",
+      "name": "Nueva Cita"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        896,
+        -48
+      ],
+      "id": "3a9c0314-fc60-4712-973d-94a3cb62e4cb",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc",
+          "mode": "list",
+          "cachedResultName": "DATOS CHATBOT - ANDES DEL SUR IPS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Agendas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gtg9itOjKaCaVo7wg1lRtKVrKGDnq9Ms3ZXR8A-4BNc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json['Codigo cita'] }}",
+            "orden": "={{ $json['Orden medica'] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id_med",
+              "displayName": "id_med",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fecha_creacion",
+              "displayName": "fecha_creacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "doc_medico",
+              "displayName": "doc_medico",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "medico",
+              "displayName": "medico",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fecha_consulta",
+              "displayName": "fecha_consulta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "hora_consulta",
+              "displayName": "hora_consulta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "doc_paciente",
+              "displayName": "doc_paciente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "paciente",
+              "displayName": "paciente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fecha_agendada",
+              "displayName": "fecha_agendada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fecha_cancelada",
+              "displayName": "fecha_cancelada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "atendida",
+              "displayName": "atendida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "orden",
+              "displayName": "orden",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1120,
+        -240
+      ],
+      "id": "ae5dab2e-74f7-402d-91fd-eb64f5f49d50",
+      "name": "Asignar Orden",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Gqknaz3wzGkB42B5",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "code": "1911",
+          "doc": "1234567890"
+        }
+      }
+    ]
+  },
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T23:49:57.498Z",
+      "createdAt": "2026-03-15T23:49:57.498Z",
+      "role": "workflow:owner",
+      "workflowId": "jDbKg6dILXbXH9uX",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-17T20:05:27.792Z",
+  "versionId": "392f43c1-c956-4f51-9c45-5a8462290fba"
+}
