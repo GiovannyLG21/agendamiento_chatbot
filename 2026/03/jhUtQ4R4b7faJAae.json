@@ -1,0 +1,201 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-15T11:57:47.000Z",
+    "createdAt": "2026-03-15T11:56:26.796Z",
+    "versionId": "5495b0e1-ee05-4e9b-8fc1-9dd02d59de69",
+    "workflowId": "jhUtQ4R4b7faJAae",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "4574042d-dd3c-47f2-90ac-e1a76d6fb6e4",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "93702436-2c47-4068-b424-81c7c08ccc7c",
+        "name": "Webhook",
+        "webhookId": "4574042d-dd3c-47f2-90ac-e1a76d6fb6e4"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          416,
+          0
+        ],
+        "id": "34aba744-bdaa-4417-a94b-8b3aa2c7c4c0",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "jsCode": "const { agenda, agenda_sel_id } = $input.first().json.body;\n\nconst agendaSelec = JSON.parse(agenda).find((agenda) => agenda.id == agenda_sel_id);\n\nconst text = agendaSelec\n  ? `${agendaSelec.dia} de ${agendaSelec.mes_nombre}`\n  : null;\n\nreturn {\n  agenda: agendaSelec ? agendaSelec : \"null\",\n  text,\n};\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          208,
+          0
+        ],
+        "id": "23cc70e5-2d44-4089-aadc-858d56fdb41a",
+        "name": "Validar Agenda"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Validar Agenda",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar Agenda": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Innovasoft Sas",
+    "name": "Version 5495b0e1",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "5495b0e1-ee05-4e9b-8fc1-9dd02d59de69",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validar Agenda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Agenda": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-15T11:38:21.128Z",
+  "id": "jhUtQ4R4b7faJAae",
+  "isArchived": false,
+  "meta": null,
+  "name": "Validar Agenda Seleccionada",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4574042d-dd3c-47f2-90ac-e1a76d6fb6e4",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "93702436-2c47-4068-b424-81c7c08ccc7c",
+      "name": "Webhook",
+      "webhookId": "4574042d-dd3c-47f2-90ac-e1a76d6fb6e4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        416,
+        0
+      ],
+      "id": "34aba744-bdaa-4417-a94b-8b3aa2c7c4c0",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { agenda, agenda_sel_id } = $input.first().json.body;\n\nconst agendaSelec = JSON.parse(agenda).find((agenda) => agenda.id == agenda_sel_id);\n\nconst text = agendaSelec\n  ? `${agendaSelec.dia} de ${agendaSelec.mes_nombre}`\n  : null;\n\nreturn {\n  agenda: agendaSelec ? agendaSelec : \"null\",\n  text,\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "23cc70e5-2d44-4089-aadc-858d56fdb41a",
+      "name": "Validar Agenda"
+    }
+  ],
+  "pinData": {},
+  "repo_name": "agendamiento_chatbot",
+  "repo_owner": "GiovannyLG21",
+  "repo_path": "",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T11:38:21.131Z",
+      "createdAt": "2026-03-15T11:38:21.131Z",
+      "role": "workflow:owner",
+      "workflowId": "jhUtQ4R4b7faJAae",
+      "projectId": "fstfsfHEv7pfFW6o"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-15T16:07:10.858Z",
+  "versionId": "5495b0e1-ee05-4e9b-8fc1-9dd02d59de69"
+}
